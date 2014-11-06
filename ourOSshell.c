@@ -38,7 +38,16 @@ int main(){
     printf("\n");
 
     char command[100];
+    //for how many valid commands we want to track up to 100 14 chars long
+    char historyOfCommands[100][14];
+    int commandScroller = 0;
+    int userCommandScroller = 0;
+
     while(strcmp(command,"exit")!=0){
+
+        //Users scroller always starts back at 0
+        //So he can just press up to get the most recent command.
+        userCommandScroller = 0;//'Press up' not implemented yet
         printf("prompt-> ");
         scanf("%s", command);
 
@@ -65,8 +74,24 @@ int main(){
         else
         {
             //processHandler(command);
-        }	
+        }
+
+        //A start to the saving commands history
+        strcpy(historyOfCommands[commandScroller], command);
+        commandScroller = commandScroller + 1;
+        //If there are 99 saved entries in history array, then start over
+        if(commandScroller == 99)
+        {
+            commandScroller = 0;
+        }
 
     }//end while 
+
+    //Test history array, will erase after history is working
+    int i = 0;
+    for(i; i < commandScroller; i++)
+    {
+        printf("%s\n", historyOfCommands[i]);
+    }
     return 0;
 }
