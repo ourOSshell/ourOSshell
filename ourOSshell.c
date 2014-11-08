@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
 
 int processHandler()
 {
@@ -16,7 +17,11 @@ int processHandler()
     else if (rc == 0) 
     {
         //child code
+        //Call exec() to run command
+        //Should not print if exec is successful
 
+        //printf("Could not find command: %s\n\n", command);
+        exit(0);
     } 
 
     else
@@ -37,6 +42,7 @@ int main(){
     printf("\n");
     printf("\n");
 
+    char directoriesPath[100];
     char command[100];
     //for how many valid commands we want to track up to 100 14 chars long
     char historyOfCommands[100][14];
@@ -45,11 +51,12 @@ int main(){
 
     while(strcmp(command,"exit")!=0){
 
-        //Users scroller always starts back at 0
-        //So he can just press up to get the most recent command.
-        userCommandScroller = 0;//'Press up' not implemented yet
-        printf("prompt-> ");
+        //get current working directory
+        getcwd(directoriesPath,99);
+        userCommandScroller = 0;
+        printf("%s***prompt->", directoriesPath);
         scanf("%s", command);
+
 
         // Some commands
         if(strcmp(command,"vim")==0)
@@ -87,7 +94,7 @@ int main(){
 
     }//end while 
 
-    //Test history array, will erase after history is working
+    //This is just for testing history array
     int i = 0;
     for(i; i < commandScroller; i++)
     {
