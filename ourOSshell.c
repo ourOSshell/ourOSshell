@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
 
 int processHandler()
 {
@@ -16,7 +17,11 @@ int processHandler()
     else if (rc == 0) 
     {
         //child code
+        //Call exec() to run command
+        //Should not print if exec is successful
 
+        //printf("Could not find command: %s\n\n", command);
+        exit(0);
     } 
 
     else
@@ -37,10 +42,21 @@ int main(){
     printf("\n");
     printf("\n");
 
+    char directoriesPath[100];
     char command[100];
+    //for how many valid commands we want to track up to 100 14 chars long
+    char historyOfCommands[100][14];
+    int commandScroller = 0;
+    int userCommandScroller = 0;
+
     while(strcmp(command,"exit")!=0){
-        printf("prompt-> ");
+
+        //get current working directory
+        getcwd(directoriesPath,99);
+        userCommandScroller = 0;
+        printf("%s***prompt->", directoriesPath);
         scanf("%s", command);
+
 
         // Some commands
         if(strcmp(command,"vim")==0)
@@ -65,8 +81,24 @@ int main(){
         else
         {
             //processHandler(command);
-        }	
+        }
+
+        //A start to the saving commands history
+        strcpy(historyOfCommands[commandScroller], command);
+        commandScroller = commandScroller + 1;
+        //If there are 99 saved entries in history array, then start over
+        if(commandScroller == 99)
+        {
+            commandScroller = 0;
+        }
 
     }//end while 
+
+    //This is just for testing history array
+    int i = 0;
+    for(i; i < commandScroller; i++)
+    {
+        printf("%s\n", historyOfCommands[i]);
+    }
     return 0;
 }
