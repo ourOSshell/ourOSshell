@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <readline/history.h>
 
 int processHandler()
 {
@@ -58,27 +59,20 @@ int main(){
 
         //used for moving through the argument array after parsing
         argumentScroller = 0;
+        //get current working directory
+        getcwd(directoriesPath,99);
         userCommandScroller = 0;
-        printf("--PROMPT-->");
+        printf("%s***prompt->", directoriesPath);
 
         int i; 
         fgets(command, 99, stdin);//instead of scanf, scanf doesnt work for parsing
 
-        // remove newline, if present, absolutely needed
+        // remove newline, if present
         i = strlen(command)-1;
         if( command[ i ] == '\n') 
             command[i] = '\0';
 
-        //This will put the whole unparsed  string into history, 
-        //needs reparsing to work as commands again
-        //Needs to be here since C parsing is destructive.
-        strcpy(historyOfCommands[commandScroller], command);
-        commandScroller = commandScroller + 1;
-        //If there are 10 saved entries in history array, then rewite first entry
-        if(commandScroller == 10)
-        {
-            commandScroller = 0;
-        }
+        //printf("This is your string: %s", command);
 
         //***********************************************
         //-------------THE PARSER-----------------------
@@ -86,7 +80,7 @@ int main(){
         char* token = strtok(command, " ");
         while (token) {
             //printf("token: %s\n", token);
-            strcpy(argumentsAfterParsing[argumentScroller], token);
+            strcpy(argumentsAfterParsing[argumentScroller], token); // move into our arguments array
             token = strtok(NULL, " ");
             argumentScroller= argumentScroller +1;
         }
@@ -106,28 +100,23 @@ int main(){
             system("vim");
         }
 
-        //get history index
-        else if(strcmp(argumentsAfterParsing[0],"H")==0)
-        {
-            //Print out history index
-            int it = 0;
-            for(it; it < commandScroller; it++)
+
+        //Working on changing directory
+        else if (strcmp(argumentsAfterParsing[0],"cd")==0)
+        { 
+            returnCode = chdir(argumentsAfterParsing[1]); 
+            if (returnCode == -1)
             {
-                printf("Command %d: %s\n", it, historyOfCommands[it]);
+                perror(argumentsAfterParsing[0]);
             }
-        }//end history index
+
+        }// end changing directory
+
 
         else if(strcmp(argumentsAfterParsing[0],"help")==0)
         {
             //These are the things you can do in ourOSshell
-            printf("So far you can type 'H' for history, exit, get cwd, and use vim\n");
-        }
-
-        //get current working directory
-        else if(strcmp(argumentsAfterParsing[0],"cwd")==0)
-        {
-            getcwd(directoriesPath,99);
-            printf("%s\n", directoriesPath);
+            printf("So far you can change directory, and use vim\n");
         }
 
         //doesn't match any commands
@@ -142,7 +131,22 @@ int main(){
             //processHandler(command);
         }
 
+        //A start to the saving commands history
+        strcpy(historyOfCommands[commandScroller], command);
+        commandScroller = commandScroller + 1;
+        //If there are 99 saved entries in history array, then start over
+        if(commandScroller == 99)
+        {
+            commandScroller = 0;
+        }
+
     }//end while 
 
+    //Test history array, will erase after history is working
+    int i = 0;
+    for(i; i < commandScroller; i++)
+    {
+        printf("%s\n", historyOfCommands[i]);
+    }
     return 0;
 }
