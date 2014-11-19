@@ -69,8 +69,7 @@ int main(){
         if( command[ i ] == '\n') 
             command[i] = '\0';
 
-        //This will put the whole unparsed  string into history, 
-        //needs reparsing to work as commands again
+        //This will put the whole unparsed  string into history, needs reparsing to work as commands again
         //Needs to be here since C parsing is destructive.
         strcpy(historyOfCommands[commandScroller], command);
         commandScroller = commandScroller + 1;
@@ -86,7 +85,7 @@ int main(){
         char* token = strtok(command, " ");
         while (token) {
             //printf("token: %s\n", token);
-            strcpy(argumentsAfterParsing[argumentScroller], token);
+            strcpy(argumentsAfterParsing[argumentScroller], token); // move into our arguments array
             token = strtok(NULL, " ");
             argumentScroller= argumentScroller +1;
         }
@@ -106,6 +105,16 @@ int main(){
             system("vim");
         }
 
+        //Working on changing directory
+        else if (strcmp(argumentsAfterParsing[0],"cd")==0)
+        { 
+            returnCode = chdir(argumentsAfterParsing[1]); 
+            if (returnCode == -1)
+            {
+                perror(argumentsAfterParsing[0]);
+            }
+        }// end changing directory
+
         //get history index
         else if(strcmp(argumentsAfterParsing[0],"H")==0)
         {
@@ -120,7 +129,7 @@ int main(){
         else if(strcmp(argumentsAfterParsing[0],"help")==0)
         {
             //These are the things you can do in ourOSshell
-            printf("So far you can type 'H' for history, exit, get cwd, and use vim\n");
+            printf("So far you can change directories, exit, get cwd, and use vim\n");
         }
 
         //get current working directory
