@@ -105,16 +105,6 @@ int main(){
             system("vim");
         }
 
-        //Working on changing directory
-        else if (strcmp(argumentsAfterParsing[0],"cd")==0)
-        { 
-            returnCode = chdir(argumentsAfterParsing[1]); 
-            if (returnCode == -1)
-            {
-                perror(argumentsAfterParsing[0]);
-            }
-        }// end changing directory
-
         //get history index
         else if(strcmp(argumentsAfterParsing[0],"H")==0)
         {
