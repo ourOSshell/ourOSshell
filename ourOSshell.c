@@ -3,6 +3,10 @@
 #include <string.h>
 #include <sys/wait.h>
 
+// added for mkdir
+#include <sys/stat.h>
+#include <sys/types.h>
+
 int processHandler()
 {
     printf("Dealing with Processes (pid:%d)\n", (int) getpid());
@@ -79,6 +83,8 @@ int main(){
             commandScroller = 0;
         }
 
+        //printf("This is your string: %s", command);
+
         //***********************************************
         //-------------THE PARSER-----------------------
         //***********************************************
@@ -105,6 +111,7 @@ int main(){
             system("vim");
         }
 
+
         //Working on changing directory
         else if (strcmp(argumentsAfterParsing[0],"cd")==0)
         { 
@@ -113,6 +120,7 @@ int main(){
             {
                 perror(argumentsAfterParsing[0]);
             }
+
         }// end changing directory
 
         //get history index
@@ -124,7 +132,16 @@ int main(){
             {
                 printf("Command %d: %s\n", it, historyOfCommands[it]);
             }
+
+
         }//end history index
+
+        //makes directory in current working directory
+        else if(strcmp(argumentsAfterParsing[0],"mkdir")==0)
+        {
+            int result = mkdir(argumentsAfterParsing[1], 0777);
+        }
+
 
         else if(strcmp(argumentsAfterParsing[0],"help")==0)
         {
@@ -135,8 +152,10 @@ int main(){
         //get current working directory
         else if(strcmp(argumentsAfterParsing[0],"cwd")==0)
         {
+
             getcwd(directoriesPath,99);
             printf("%s\n", directoriesPath);
+
         }
 
         //doesn't match any commands
