@@ -7,8 +7,15 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-int processHandler()
+int processHandler(char *argument)
 {
+    //check if getting string
+    //printf("%s\n", argument);
+    printf("%s\n", argument);
+
+    int ret;
+    int pid;
+
     printf("Dealing with Processes (pid:%d)\n", (int) getpid());
     int rc = fork() ; 
 
@@ -21,20 +28,25 @@ int processHandler()
     else if (rc == 0) 
     {
         //child code
-        //Call exec() to run command
-        //Should not print if exec is successful
 
-        //printf("Could not find command: %s\n\n", command);
-        exit(0);
-
-    } 
+        //this will execute the program
+        ret = execvp(argument);
+        if (ret==-1)
+        {
+            perror("failed to execute command"); 
+            //exit(0);
+        } //end if failed
+    }
 
     else
     {
         //Parent process code
         int wc = wait(NULL); //is child finished?
     }
+
+    printf("\n");
 }
+
 
 int main(){
 
@@ -52,7 +64,7 @@ int main(){
     //The parser will fill this array with our different arguments
     char argumentsAfterParsing[10][100];
     //for how many valid commands we want to track up to 100, 14 chars long
-    char historyOfCommands[100][14];
+    char historyOfCommands[100][20];
     int commandScroller = 0;
     int userCommandScroller = 0;
     int argumentScroller = 0;
@@ -132,9 +144,13 @@ int main(){
             {
                 printf("Command %d: %s\n", it, historyOfCommands[it]);
             }
-
-
         }//end history index
+
+        //working on using the index of history commands
+        else if(strcmp(argumentsAfterParsing[0],"use")==0)
+        {
+
+        }
 
         //makes directory in current working directory
         else if(strcmp(argumentsAfterParsing[0],"mkdir")==0)
@@ -146,7 +162,8 @@ int main(){
         else if(strcmp(argumentsAfterParsing[0],"help")==0)
         {
             //These are the things you can do in ourOSshell
-            printf("So far you can change directories, exit, get cwd, and use vim\n");
+            printf("So far you can:\nChange directories 'cd'\nExit 'exit'\nGet cwd 'cwd'\n" 
+                "Use vim 'vim'\nCheck command history 'H'\nMake directory 'mkdir'");
         }
 
         //get current working directory
@@ -159,15 +176,16 @@ int main(){
         }
 
         //doesn't match any commands
-        else if(strcmp(command,"")==0)
+        else if(strcmp(argumentsAfterParsing[0],"")==0)
         {
             printf("This is not a command. Check 'help' for commands.\n");
         }
 
         //valid command so use processHandler
-        else
+        else if(strcmp(argumentsAfterParsing[0],"execute")==0)
         {
-            //processHandler(command);
+            char *arg = argumentsAfterParsing[1];
+            processHandler(arg);
         }
 
     }//end while 
