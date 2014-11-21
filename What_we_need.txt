@@ -1,3 +1,15 @@
 Top Priority:
 executing an executable.
 
+-- impement cd
+-- prompt shows current directory/user
+clear command string
+
+-- piping
+-- history
+  -- Tom is working on it
+  -- fix arrow?
+-- tab complete
+  -- Matt working on it
+-- file redirect
+  -- Joe working on it
