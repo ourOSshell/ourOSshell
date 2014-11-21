@@ -11,43 +11,68 @@ void append(char* str, char ch){
 int main(){
     char command[100] = "\0";
     char ch;
+    char *args[10];
+    args[0] = strdup("ls");
+    args[1] = NULL;
+    int rc;
     //do{int c = getchar(); printf("c=%d\n", c);}while(1);
-    //Get key strokes directly and stop echo of every key stroke
-    system ("/bin/stty raw -echo");
-    //while return is not hit
-    while((ch = getchar())!='\r'){
-	    if(ch == '\t'){
-            //do tab complete
-            printf("%s", command);
+    while(1){
+        printf("prompt-> ");
+        //Get key strokes directly and stop echo of every key stroke
+        system ("/bin/stty raw -echo");
+        //while return is not hit
+        while((ch = getchar())!='\r'){
+    	    if(ch == '\t'){
+                //do tab complete
+                printf("%s", command);
+            }
+            //if backspace is hit
+            else if(ch == 127){
+                if(strlen(command)>0){
+                    //remove last char from screen
+                    printf("\b \b");
+                    //remove last char from behind the scenes
+                    command[strlen(command)-1] = '\0';
+                }
+            }
+            //failed attempt
+            //if up arrow get previous command
+            else if(ch == 27){
+                if(ch == 65)
+                    printf("up");
+                else if(ch == 66)
+                    printf("down");
+            }
+            //else if(ch == 65);
+            //if dowm arrow get next command
+            //else if(ch == 66){
+                //printf("down");
+            //}
+            //put the char on the string and on the screen
+            else{
+                putchar(ch);
+                append(command, ch);
+            }
         }
-        //if backspace is hit
-        else if(ch == 127){
-            //remove last char from screen
-            printf("\b \b");
-            //remove last char from behind the scenes
-            command[strlen(command)-1] = '\0';
+        system("/bin/stty cooked echo");
+        //to make sure we have the right string in the end
+        printf("%s\n", command);
+        if(strcmp(command,"exit")==0) exit(0);
+        rc = fork();
+        if(rc<0){
+            fprintf(stderr, "Could not fork\n\n");
+            exit(0);
         }
-        //failed attempt
-        //if up arrow get previous command
-        else if(ch == 27){
-            if(ch == 65)
-                printf("up");
-            else if(ch == 66)
-                printf("down");
+        else if(rc==0){
+            //call exec() to run command
+            execvp(args[0],args);
+            //Sould not print if exec() is successful
+            fprintf(stderr, "Could not find command: %s\n\n", command);
+            exit(0);
         }
-        //else if(ch == 65);
-        //if dowm arrow get next command
-        //else if(ch == 66){
-            //printf("down");
-        //}
-        //put the char on the string and on the screen
-        else{
-            putchar(ch);
-            append(command, ch);
+        else if(rc>0){
+            wait(NULL);
         }
     }
-    system("/bin/stty cooked echo");
-    //to make sure we have the right string in the end
-    printf("%s\n", command);
     return 0;
 }
