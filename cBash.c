@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define KRED "\x1B[31m"
+#define KRESET "\x1B[0m"
+
+
 //Adds a character to the end of a string
 void append(char* str, char ch){
     int length = strlen(str);
@@ -24,7 +28,7 @@ int main(){
     int rc;
     //do{int c = getchar(); printf("c=%d\n", c);}while(1);
     while(1){
-        printf("prompt-> ");
+        printf(KRED "prompt" KRESET "-> ");
         //Get key strokes directly and stop echo of every key stroke
         system ("/bin/stty raw -echo");
         //while return is not hit
