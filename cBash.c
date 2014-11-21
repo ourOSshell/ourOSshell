@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 //Adds a character to the end of a string
 void append(char* str, char ch){
@@ -10,6 +11,8 @@ void append(char* str, char ch){
 }
 
 int main(){
+    bool outFound = false;
+    bool inFound = false;
     //whole command which must latter be parsed.
     //Should be an array of strings
     char command[100] = "\0";
@@ -25,6 +28,7 @@ int main(){
     //do{int c = getchar(); printf("c=%d\n", c);}while(1);
     while(1){
         printf("prompt-> ");
+        command[0] = '\0';
         //Get key strokes directly and stop echo of every key stroke
         system ("/bin/stty raw -echo");
         //while return is not hit
@@ -64,7 +68,7 @@ int main(){
         //Return to normal capturing of keystrokes
         system("/bin/stty cooked echo");
         //to make sure we have the right string in the end
-        printf("%s\n", command);
+        printf("\n");
         
         //parse(command);
         int argsIndex = 0;
@@ -86,6 +90,23 @@ int main(){
         }
         //Child proccess where command is executed.
         else if(rc==0){
+
+
+            // Don't forget to fflush(0) so that the stream is empty!
+            if(inFound) // if < is found
+            {
+                int fd1 = open(input, O_RDONLY, 0); // open the file
+                dup2(fd1, STDIN_FILENO); // get contents of file and put into the file stream
+                close(fd1); // close the file
+            }
+
+            if(outFound) // if > is found
+            {
+                int fd2 = creat(output, 0644); // create the file
+                dup2(fd2, STDOUT_FILENO); // get contents from std out and out into file
+                close(fd2); // close file
+            }
+
             //call exec() to run command
             execvp(args[0],args);
             //Sould not print if exec() is successful
