@@ -41,7 +41,8 @@ int main(){
     char ch;
     //will hold parsed command string
     char *args[20];
-    char *leftright[5];
+    char *argsout[5];
+    char *argsin[5];
     int i;
     for(i=0; i<20; i++) args[i]=NULL;
     int argsLength = 0;
@@ -135,24 +136,24 @@ int main(){
         if(strstr(command, ">"))
         {
             outFound = true;
-            parser(command, leftright, ">");
-            output = leftright[1];
-            strcpy(command, leftright[0]);
+            parser(command, argsout, ">");
+            output = argsout[1];
+            strcpy(command, argsout[0]);
         }
         else if(strstr(command, "<"))
         {
             inFound = true;
-            parser(command, args, "<");
-            input = args[1];
-            parser(args[0], args, " ");
+            parser(command, argsin, "<");
+            input = argsin[1];
+            strcpy(command, argsin[0]);
         }
         else
         {
             //parse normally
-            argsLength = parser(command, args, " ");
+            //argsLength = parser(command, args, " ");
         }
 
-        //argsLength = parser(command, args, " ");
+        argsLength = parser(command, args, " ");
 
         
         //Exit loop if command is exit
@@ -194,7 +195,8 @@ int main(){
                 {
                     int fd2 = creat(output, 0644); // create the file
                     dup2(fd2, STDOUT_FILENO); // get contents from std out and out into file
-                    //close(fd2); // close file
+                    close(fd2); // close file
+                    outFound = false;
                 }
     
                 //call exec() to run command
@@ -206,7 +208,7 @@ int main(){
             //Parent process
             else if(rc>0){
                 wait(NULL);
-                fflush(0);
+                //fflush(0);
             }
         }
     }
