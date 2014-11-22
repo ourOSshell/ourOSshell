@@ -141,7 +141,6 @@ int main(){
         else if(strstr(command, "<"))
         {
             inFound = true;
-            outFound = true;
             parser(command, args, "<");
             input = args[1];
             parser(args[0], args, " ");
@@ -149,9 +148,10 @@ int main(){
         else
         {
             //parse normally
+            argsLength = parser(command, args, " ");
         }
 
-        argsLength = parser(command, args, " ");
+        //argsLength = parser(command, args, " ");
 
         
         //Exit loop if command is exit
@@ -179,6 +179,7 @@ int main(){
     
     
                 // dont forget to fflush(0);
+                fflush(0);
                 if(inFound) // if < is found
                 {
                     int fd1 = open(input, O_RDONLY, 0); // open the file
@@ -191,8 +192,7 @@ int main(){
                 {
                     int fd2 = creat(output, 0644); // create the file
                     dup2(fd2, STDOUT_FILENO); // get contents from std out and out into file
-                    close(fd2); // close file
-                    outFound = false;
+                    //close(fd2); // close file
                 }
     
                 //call exec() to run command
@@ -204,6 +204,7 @@ int main(){
             //Parent process
             else if(rc>0){
                 wait(NULL);
+                fflush(0);
             }
         }
     }
