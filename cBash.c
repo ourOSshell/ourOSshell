@@ -24,9 +24,10 @@ int main(){
     char ch;
     //will hold parsed string
     char *args[10];
-    //temporary values to test exec() call
+
     args[0] = strdup("ls");
     args[1] = NULL;
+
     //return code for fork()
     int rc;
     //do{int c = getchar(); printf("c=%d\n", c);}while(1);
@@ -87,6 +88,19 @@ int main(){
         //Exit loop if command is exit
         //Should eventually be args[0]
         if(strcmp(command,"exit")==0) exit(0);
+        if(strcmp(args[0], "cd") == 0) //check to see if the command is "cd"
+        {
+            int argLength = (sizeof(args)/sizeof(type(args)));
+            if(argLength == 1) //if there is no argument go one level up.
+            {
+                char cmd = '..';
+                chdir(cmd);
+            }    
+            else 
+            {
+                chdir(args[1]); //if there are arguments change the directory to whatever the argument is
+            }
+        }
         rc = fork();
         if(rc<0){
             fprintf(stderr, "Could not fork\n\n");
@@ -97,7 +111,7 @@ int main(){
 
 
             // Don't forget to fflush(0) so that the stream is empty!
-            if(inFound) // if < is found
+            /*if(inFound) // if < is found
             {
                 int fd1 = open(input, O_RDONLY, 0); // open the file
                 dup2(fd1, STDIN_FILENO); // get contents of file and put into the file stream
@@ -109,7 +123,7 @@ int main(){
                 int fd2 = creat(output, 0644); // create the file
                 dup2(fd2, STDOUT_FILENO); // get contents from std out and out into file
                 close(fd2); // close file
-            }
+            }*/
 
             //call exec() to run command
             execvp(args[0],args);
