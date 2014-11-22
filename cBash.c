@@ -41,6 +41,7 @@ int main(){
     int i;
     for(i=0; i<20; i++) args[i]=NULL;
     int argsLength = 0;
+
     //temporary values to test exec() call
     //args[0] = strdup("ls");
     //args[1] = NULL;
