@@ -5,9 +5,9 @@
 #include <stdbool.h>
 #include <sys/wait.h>
 
+//colors for printing to screen
 #define KRED "\x1B[31m"
 #define KRESET "\x1B[0m"
-
 
 //Adds a character to the end of a string
 void append(char* str, char ch){
@@ -24,7 +24,7 @@ int main(){
     char command[100] = "\0";
     //last character read in
     char ch;
-    //will hold parsed string
+    //will hold parsed command string
     char *args[10];
     //temporary values to test exec() call
     //args[0] = strdup("ls");
@@ -33,7 +33,9 @@ int main(){
     int rc;
     //do{int c = getchar(); printf("c=%d\n", c);}while(1);
     while(1){
+        //clear command string
         command[0] = '\0';
+        //KRED and KRESET change the color of the text
         printf(KRED "prompt" KRESET "-> ");
         //Get key strokes directly and stop echo of every key stroke
         system ("/bin/stty raw -echo");
@@ -77,8 +79,8 @@ int main(){
         printf("\n");
         
         //parse(command);
+        //index into array of arguments
         int argsIndex = 0;
-        printf("not yet...");
         char* token = strtok(command, " ");
         while (token){
             //printf("token: %s\n", token);
@@ -87,11 +89,9 @@ int main(){
             token = strtok(NULL, " ");
             argsIndex = argsIndex + 1;
         }
-        int lengthofargs = sizeof(args);
-        printf("\n\n%d\n\n", lengthofargs);
         
         //Exit loop if command is exit
-        //Should eventually be args[0]
+        //Should eventually be args[0]?
         if(strcmp(command,"exit")==0) exit(0);
         if(strcmp(args[0], "cd") == 0) //check to see if the command is "cd"
         {
