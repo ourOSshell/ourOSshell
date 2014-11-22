@@ -24,10 +24,9 @@ int main(){
     char ch;
     //will hold parsed string
     char *args[10];
-
-    args[0] = strdup("ls");
-    args[1] = NULL;
-
+    //temporary values to test exec() call
+    //args[0] = strdup("ls");
+    //args[1] = NULL;
     //return code for fork()
     int rc;
     //do{int c = getchar(); printf("c=%d\n", c);}while(1);
@@ -77,13 +76,17 @@ int main(){
         
         //parse(command);
         int argsIndex = 0;
+        printf("not yet...");
         char* token = strtok(command, " ");
         while (token){
             //printf("token: %s\n", token);
-            strcpy(args[argsIndex], token); // move into our arguments array
+            args[argsIndex] = strdup(token);
+            //strcpy(args[argsIndex], token); // move into our arguments array
             token = strtok(NULL, " ");
-            argsIndex++;
+            argsIndex = argsIndex + 1;
         }
+        int lengthofargs = sizeof(args);
+        printf("\n\n%d\n\n", lengthofargs);
         
         //Exit loop if command is exit
         //Should eventually be args[0]
