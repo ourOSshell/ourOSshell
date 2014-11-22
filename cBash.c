@@ -41,17 +41,21 @@ int main(){
     int i;
     for(i=0; i<20; i++) args[i]=NULL;
     int argsLength = 0;
-    //temporary values to test exec() call
-    //args[0] = strdup("ls");
-    //args[1] = NULL;
     //return code for fork()
     int rc;
+    //current working directory
+    char cwd[100];
     //do{int c = getchar(); printf("c=%d\n", c);}while(1);
     while(1){
         //clear command string
         command[0] = '\0';
-        //KRED and KRESET change the color of the text
-        printf(KRED "prompt" KRESET "-> ");
+        //get current directory
+        if(getcwd(cwd, sizeof(cwd))){
+            printf("%s%s%s --> ", KRED, cwd, KRESET);
+        }
+        else{
+            printf(KRED "prompt" KRESET "-> ");
+        }
         //Get key strokes directly and stop echo of every key stroke
         system ("/bin/stty raw -echo");
         //while return is not hit
