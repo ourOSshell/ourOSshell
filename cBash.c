@@ -16,6 +16,18 @@ void append(char* str, char ch){
     str[length+1] = '\0';
 }
 
+int parser(char* str, char* array[], char* ch){
+    int i = 0;
+    char* token = strtok(str, ch);
+    while(token){
+        printf("token: %s\n", token);
+        array[i] = strdup(token);
+        token = strtok(NULL, ch);
+        i++;
+    }
+    return i;
+}
+
 int main(){
     bool outFound = false;
     bool inFound = false;
@@ -26,11 +38,13 @@ int main(){
     char ch;
     //will hold parsed command string
     char *args[20];
+    int i;
+    for(i=0; i<20; i++) args[i]=NULL;
     int argsLength = 0;
 
     //temporary values to test exec() call
-    args[0] = strdup("ls");
-    args[1] = NULL;
+    //args[0] = strdup("ls");
+    //args[1] = NULL;
     //return code for fork()
     int rc;
     //do{int c = getchar(); printf("c=%d\n", c);}while(1);
@@ -103,7 +117,7 @@ int main(){
         for(argsIndex = 0; argsIndex<argsLength; argsIndex++){
             args[argsIndex] = NULL;
         }
-        argsIndex = 0;
+        /*argsIndex = 0;
         char* token = strtok(command, " ");
         while (token){
             //printf("token: %s\n", token);
@@ -111,6 +125,7 @@ int main(){
             //strcpy(args[argsIndex], token); // move into our arguments array
             token = strtok(NULL, " ");
             argsIndex = argsIndex + 1;
+<<<<<<< HEAD
         }
         argsLength = argsIndex;
 
@@ -130,6 +145,10 @@ int main(){
             inFound = true;
             printf("found < and set inFound to true");
         }
+
+        }*/
+        argsLength = parser(command, args, " ");
+
         
         //Exit loop if command is exit
         //Should eventually be args[0]?
@@ -145,39 +164,41 @@ int main(){
                 chdir(args[1]); //if there are arguments change the directory to whatever the argument is
             }
         }
-        rc = fork();
-        if(rc<0){
-            fprintf(stderr, "Could not fork\n\n");
-            exit(0);
-        }
-        //Child proccess where command is executed.
-        else if(rc==0){
-
-
-            // Don't forget to fflush(0) so that the stream is empty!
-            /*if(inFound) // if < is found
-            {
-                int fd1 = open(input, O_RDONLY, 0); // open the file
-                dup2(fd1, STDIN_FILENO); // get contents of file and put into the file stream
-                close(fd1); // close the file
+        else{
+            rc = fork();
+            if(rc<0){
+                fprintf(stderr, "Could not fork\n\n");
+                exit(0);
             }
-
-            if(outFound) // if > is found
-            {
-                int fd2 = creat(output, 0644); // create the file
-                dup2(fd2, STDOUT_FILENO); // get contents from std out and out into file
-                close(fd2); // close file
-            }*/
-
-            //call exec() to run command
-            execvp(args[0],args);
-            //Sould not print if exec() is successful
-            fprintf(stderr, "Could not find command: %s\n\n", command);
-            exit(0);
-        }
-        //Parent process
-        else if(rc>0){
-            wait(NULL);
+            //Child proccess where command is executed.
+            else if(rc==0){
+    
+    
+                // Don't forget to fflush(0) so that the stream is empty!
+                /*if(inFound) // if < is found
+                {
+                    int fd1 = open(input, O_RDONLY, 0); // open the file
+                    dup2(fd1, STDIN_FILENO); // get contents of file and put into the file stream
+                    close(fd1); // close the file
+                }
+    
+                if(outFound) // if > is found
+                {
+                    int fd2 = creat(output, 0644); // create the file
+                    dup2(fd2, STDOUT_FILENO); // get contents from std out and out into file
+                    close(fd2); // close file
+                }*/
+    
+                //call exec() to run command
+                execvp(args[0],args);
+                //Sould not print if exec() is successful
+                fprintf(stderr, "Could not find command: %s\n\n", command);
+                exit(0);
+            }
+            //Parent process
+            else if(rc>0){
+                wait(NULL);
+            }
         }
     }
     return 0;
