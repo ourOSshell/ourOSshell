@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <sys/wait.h>
+#include <fcntl.h>
 
 //colors for printing to screen
 #define KRED "\x1B[31m"
@@ -20,7 +21,7 @@ int parser(char* str, char* array[], char* ch){
     int i = 0;
     char* token = strtok(str, ch);
     while(token){
-        printf("token: %s\n", token);
+        //printf("token: %s\n", token);
         array[i] = strdup(token);
         token = strtok(NULL, ch);
         i++;
@@ -29,6 +30,8 @@ int parser(char* str, char* array[], char* ch){
 }
 
 int main(){
+    char* input;
+    char* output;
     bool outFound = false;
     bool inFound = false;
     //whole command which must latter be parsed.
@@ -93,6 +96,23 @@ int main(){
         system("/bin/stty cooked echo");
         //to make sure we have the right string in the end
         printf("\n");
+
+        // if(strstr(command, ">"))
+        // {
+        //     outFound = true;
+        //     printf("found > and set outFound to true");
+        //     printf("\n");
+        //     printf("args[0]: ", args[0]);
+        //     printf("\n");
+        //     printf("args[1]: ", args[1]);
+        //     printf("\n");
+        //     printf("args[2]: ", args[2]);
+        // }
+        // else if(strstr(command, "<"))
+        // {
+        //     inFound = true;
+        //     printf("found < and set inFound to true");
+        // }
         
         //parse(command);
         //index into array of arguments
@@ -108,8 +128,31 @@ int main(){
             //strcpy(args[argsIndex], token); // move into our arguments array
             token = strtok(NULL, " ");
             argsIndex = argsIndex + 1;
-        }*/
+        }
+        argsLength = argsIndex;*/
+
+        if(strstr(command, ">"))
+        {
+            outFound = true;
+            parser(command, args, ">");
+            output = args[1];
+            parser(args[0], args, " ");
+        }
+        else if(strstr(command, "<"))
+        {
+            inFound = true;
+            outFound = true;
+            parser(command, args, "<");
+            input = args[1];
+            parser(args[0], args, " ");
+        }
+        else
+        {
+            //parse normally
+        }
+
         argsLength = parser(command, args, " ");
+
         
         //Exit loop if command is exit
         //Should eventually be args[0]?
@@ -135,12 +178,13 @@ int main(){
             else if(rc==0){
     
     
-                // Don't forget to fflush(0) so that the stream is empty!
-                /*if(inFound) // if < is found
+                // dont forget to fflush(0);
+                if(inFound) // if < is found
                 {
                     int fd1 = open(input, O_RDONLY, 0); // open the file
                     dup2(fd1, STDIN_FILENO); // get contents of file and put into the file stream
                     close(fd1); // close the file
+                    inFound = false;
                 }
     
                 if(outFound) // if > is found
@@ -148,7 +192,8 @@ int main(){
                     int fd2 = creat(output, 0644); // create the file
                     dup2(fd2, STDOUT_FILENO); // get contents from std out and out into file
                     close(fd2); // close file
-                }*/
+                    outFound = false;
+                }
     
                 //call exec() to run command
                 execvp(args[0],args);
