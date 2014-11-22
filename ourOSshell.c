@@ -7,6 +7,26 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+//***********************************************
+//-------------THE PARSER----------------------
+//***********************************************
+/*
+char [] [] theParser(theCommand [])
+{
+char* token = strtok(command, " ");
+while (token) {
+//printf("token: %s\n", token);
+strcpy(argumentsAfterParsing[argumentScroller], token); // move into our arguments array
+token = strtok(NULL, " ");
+argumentScroller= argumentScroller +1;
+}
+
+}
+*/
+//end parser
+
+
+
 int processHandler(char *argument)
 {
     //check if getting string
@@ -29,7 +49,7 @@ int processHandler(char *argument)
     {
         //child code
 
-        //this will execute the program
+
         ret = execvp(argument);
         if (ret==-1)
         {
@@ -64,7 +84,7 @@ int main(){
     //The parser will fill this array with our different arguments
     char argumentsAfterParsing[10][100];
     //for how many valid commands we want to track up to 100, 14 chars long
-    char historyOfCommands[100][20];
+    char historyOfCommands[10][20];
     int commandScroller = 0;
     int userCommandScroller = 0;
     int argumentScroller = 0;
@@ -97,17 +117,19 @@ int main(){
 
         //printf("This is your string: %s", command);
 
+        /*
         //***********************************************
         //-------------THE PARSER-----------------------
         //***********************************************
         char* token = strtok(command, " ");
         while (token) {
-            //printf("token: %s\n", token);
-            strcpy(argumentsAfterParsing[argumentScroller], token); // move into our arguments array
-            token = strtok(NULL, " ");
-            argumentScroller= argumentScroller +1;
+        //printf("token: %s\n", token);
+        strcpy(argumentsAfterParsing[argumentScroller], token); // move into our arguments array
+        token = strtok(NULL, " ");
+        argumentScroller= argumentScroller +1;
         }
         //end parser
+        */
 
         //Using for testing whether arguments are in array
         int r = 0;
@@ -150,6 +172,18 @@ int main(){
         else if(strcmp(argumentsAfterParsing[0],"use")==0)
         {
 
+            int numb = *((int *)argumentsAfterParsing[1][0]);
+
+            //take second argument as # refence to which command in array
+            if(numb <= 9 && numb >= 0)
+            {
+                char *reusedCommand = historyOfCommands[numb];
+                printf("Command: %s\n", reusedCommand);
+
+            }
+
+            //Than we should put parse function in function. Recall on command
+
         }
 
         //makes directory in current working directory
@@ -163,7 +197,7 @@ int main(){
         {
             //These are the things you can do in ourOSshell
             printf("So far you can:\nChange directories 'cd'\nExit 'exit'\nGet cwd 'cwd'\n" 
-                "Use vim 'vim'\nCheck command history 'H'\nMake directory 'mkdir'");
+                "Use vim 'vim'\nCheck command history 'H'\nMake directory 'mkdir'\n");
         }
 
         //get current working directory
