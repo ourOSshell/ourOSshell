@@ -24,9 +24,10 @@ int main(){
     char ch;
     //will hold parsed string
     char *args[10];
-    //temporary values to test exec() call
+
     args[0] = strdup("ls");
     args[1] = NULL;
+
     //return code for fork()
     int rc;
     //do{int c = getchar(); printf("c=%d\n", c);}while(1);
@@ -87,6 +88,19 @@ int main(){
         //Exit loop if command is exit
         //Should eventually be args[0]
         if(strcmp(command,"exit")==0) exit(0);
+        if(strcmp(args[0], "cd") == 0) //check to see if the command is "cd"
+        {
+            int argLength = (sizeof(args)/sizeof(type(args)));
+            if(argLength == 1) //if there is no argument go one level up.
+            {
+                char cmd = '..';
+                chdir(cmd);
+            }    
+            else 
+            {
+                chdir(args[1]); //if there are arguments change the directory to whatever the argument is
+            }
+        }
         rc = fork();
         if(rc<0){
             fprintf(stderr, "Could not fork\n\n");
