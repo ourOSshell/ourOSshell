@@ -184,6 +184,7 @@ int main(){
                     int fd1 = open(input, O_RDONLY, 0); // open the file
                     dup2(fd1, STDIN_FILENO); // get contents of file and put into the file stream
                     close(fd1); // close the file
+                    inFound = false;
                 }
     
                 if(outFound) // if > is found
@@ -191,6 +192,7 @@ int main(){
                     int fd2 = creat(output, 0644); // create the file
                     dup2(fd2, STDOUT_FILENO); // get contents from std out and out into file
                     close(fd2); // close file
+                    outFound = false;
                 }
     
                 //call exec() to run command
