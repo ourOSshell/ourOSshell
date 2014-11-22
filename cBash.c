@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <sys/wait.h>
 
 #define KRED "\x1B[31m"
 #define KRESET "\x1B[0m"
@@ -80,9 +81,10 @@ int main(){
         char* token = strtok(command, " ");
         while (token){
             //printf("token: %s\n", token);
-            strcpy(args[argsIndex], token); // move into our arguments array
+            args[argsIndex] = strdup(token);
+            //strcpy(args[argsIndex], token); // move into our arguments array
             token = strtok(NULL, " ");
-            argsIndex++;
+            argsIndex = argsIndex + 1;
         }
         
         //Exit loop if command is exit
