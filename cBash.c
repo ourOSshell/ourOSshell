@@ -97,7 +97,7 @@ int main(){
 
 
             // Don't forget to fflush(0) so that the stream is empty!
-            if(inFound) // if < is found
+            /*if(inFound) // if < is found
             {
                 int fd1 = open(input, O_RDONLY, 0); // open the file
                 dup2(fd1, STDIN_FILENO); // get contents of file and put into the file stream
@@ -109,7 +109,7 @@ int main(){
                 int fd2 = creat(output, 0644); // create the file
                 dup2(fd2, STDOUT_FILENO); // get contents from std out and out into file
                 close(fd2); // close file
-            }
+            }*/
 
             //call exec() to run command
             execvp(args[0],args);
