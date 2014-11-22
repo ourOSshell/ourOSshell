@@ -79,6 +79,23 @@ int main(){
         system("/bin/stty cooked echo");
         //to make sure we have the right string in the end
         printf("\n");
+
+        // if(strstr(command, ">"))
+        // {
+        //     outFound = true;
+        //     printf("found > and set outFound to true");
+        //     printf("\n");
+        //     printf("args[0]: ", args[0]);
+        //     printf("\n");
+        //     printf("args[1]: ", args[1]);
+        //     printf("\n");
+        //     printf("args[2]: ", args[2]);
+        // }
+        // else if(strstr(command, "<"))
+        // {
+        //     inFound = true;
+        //     printf("found < and set inFound to true");
+        // }
         
         //parse(command);
         //index into array of arguments
@@ -96,6 +113,23 @@ int main(){
             argsIndex = argsIndex + 1;
         }
         argsLength = argsIndex;
+
+        if(strstr(command, ">"))
+        {
+            outFound = true;
+            printf("found > and set outFound to true");
+            printf("\n");
+            printf("args[0]: ", args[0]);
+            printf("\n");
+            printf("args[1]: ", args[1]);
+            printf("\n");
+            printf("args[2]: ", args[2]);
+        }
+        else if(strstr(command, "<"))
+        {
+            inFound = true;
+            printf("found < and set inFound to true");
+        }
         
         //Exit loop if command is exit
         //Should eventually be args[0]?
