@@ -16,6 +16,18 @@ void append(char* str, char ch){
     str[length+1] = '\0';
 }
 
+int parser(char* str, char* array[], char* ch){
+    int i = 0;
+    char* token = strtok(str, ch);
+    while(token){
+        printf("token: %s\n", token);
+        array[i] = strdup(token);
+        token = strtok(NULL, ch);
+        i++;
+    }
+    return i;
+}
+
 int main(){
     bool outFound = false;
     bool inFound = false;
@@ -87,7 +99,7 @@ int main(){
         for(argsIndex = 0; argsIndex<argsLength; argsIndex++){
             args[argsIndex] = NULL;
         }
-        argsIndex = 0;
+        /*argsIndex = 0;
         char* token = strtok(command, " ");
         while (token){
             //printf("token: %s\n", token);
@@ -95,8 +107,8 @@ int main(){
             //strcpy(args[argsIndex], token); // move into our arguments array
             token = strtok(NULL, " ");
             argsIndex = argsIndex + 1;
-        }
-        argsLength = argsIndex;
+        }*/
+        argsLength = parser(command, args, " ");
         
         //Exit loop if command is exit
         //Should eventually be args[0]?
