@@ -29,7 +29,7 @@ int processHandler(char *argument)
     {
         //child code
 
-        //this will execute the program
+
         ret = execvp(argument);
         if (ret==-1)
         {
@@ -149,6 +149,20 @@ int main(){
         //working on using the index of history commands
         else if(strcmp(argumentsAfterParsing[0],"use")==0)
         {
+            //casting 
+            //char isNumber = argumentsAfterParsing[1][0];
+            //int theNumber = isNumber -'0';
+            int theNumber = argumentsAfterParsing[1][0];
+
+            //take second argument as # refence to which command in array
+            if(theNumber <= 9 && theNumber >= 0)
+            {
+                char *reusedCommand = historyOfCommands[theNumber];
+                printf("Command: %s\n", reusedCommand);
+
+            }
+
+            //Than we should put parse function in function. Recall on command
 
         }
 
@@ -163,7 +177,7 @@ int main(){
         {
             //These are the things you can do in ourOSshell
             printf("So far you can:\nChange directories 'cd'\nExit 'exit'\nGet cwd 'cwd'\n" 
-                "Use vim 'vim'\nCheck command history 'H'\nMake directory 'mkdir'");
+                "Use vim 'vim'\nCheck command history 'H'\nMake directory 'mkdir'\n");
         }
 
         //get current working directory
