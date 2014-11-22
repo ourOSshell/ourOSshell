@@ -131,6 +131,8 @@ int main(){
         }
         argsLength = argsIndex;*/
 
+        // file redirection code (there are bugs so uncomment to test if you wish)
+        /*
         if(strstr(command, ">"))
         {
             outFound = true;
@@ -150,6 +152,7 @@ int main(){
         {
             //parse normally
         }
+        */
 
         argsLength = parser(command, args, " ");
 
@@ -177,9 +180,9 @@ int main(){
             //Child proccess where command is executed.
             else if(rc==0){
     
-    
+                //more file redirection code (there are bugs so uncomment to test if you wish)
                 // dont forget to fflush(0);
-                if(inFound) // if < is found
+                /*if(inFound) // if < is found
                 {
                     int fd1 = open(input, O_RDONLY, 0); // open the file
                     dup2(fd1, STDIN_FILENO); // get contents of file and put into the file stream
@@ -193,7 +196,7 @@ int main(){
                     dup2(fd2, STDOUT_FILENO); // get contents from std out and out into file
                     close(fd2); // close file
                     outFound = false;
-                }
+                }*/
     
                 //call exec() to run command
                 execvp(args[0],args);
