@@ -26,6 +26,8 @@ int main(){
     char ch;
     //will hold parsed command string
     char *args[20];
+    int argsLength = 0;
+
     //temporary values to test exec() call
     args[0] = strdup("ls");
     args[1] = NULL;
@@ -80,7 +82,11 @@ int main(){
         
         //parse(command);
         //index into array of arguments
-        int argsIndex = 0;
+        int argsIndex;
+        for(argsIndex = 0; argsIndex<argsLength; argsIndex++){
+            args[argsIndex] = NULL;
+        }
+        argsIndex = 0;
         char* token = strtok(command, " ");
         while (token){
             //printf("token: %s\n", token);
@@ -89,14 +95,14 @@ int main(){
             token = strtok(NULL, " ");
             argsIndex = argsIndex + 1;
         }
+        argsLength = argsIndex;
         
         //Exit loop if command is exit
         //Should eventually be args[0]?
         if(strcmp(command,"exit")==0) exit(0);
         if(strcmp(args[0], "cd") == 0) //check to see if the command is "cd"
         {
-            int argLength = (sizeof(args)/sizeof(type(args)));
-            if(argLength == 1) //if there is no argument go one level up.
+            if(argsLength == 1) //if there is no argument go one level up.
             {
                 chdir("/");
             }    
