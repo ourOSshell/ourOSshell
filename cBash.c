@@ -25,10 +25,10 @@ int main(){
     //last character read in
     char ch;
     //will hold parsed command string
-    char *args[10];
+    char *args[20];
     //temporary values to test exec() call
-    //args[0] = strdup("ls");
-    //args[1] = NULL;
+    args[0] = strdup("ls");
+    args[1] = NULL;
     //return code for fork()
     int rc;
     //do{int c = getchar(); printf("c=%d\n", c);}while(1);
@@ -98,8 +98,7 @@ int main(){
             int argLength = (sizeof(args)/sizeof(type(args)));
             if(argLength == 1) //if there is no argument go one level up.
             {
-                char cmd = '..';
-                chdir(cmd);
+                chdir("/");
             }    
             else 
             {
