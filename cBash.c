@@ -1,7 +1,9 @@
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <sys/wait.h>
 
 #define KRED "\x1B[31m"
 #define KRESET "\x1B[0m"
