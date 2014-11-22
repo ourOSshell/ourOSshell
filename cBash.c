@@ -26,7 +26,7 @@ int main(){
     char ch;
     //will hold parsed command string
     char *args[10];
-    int argsLength;
+    int argsLength = 0;
     //temporary values to test exec() call
     //args[0] = strdup("ls");
     //args[1] = NULL;
