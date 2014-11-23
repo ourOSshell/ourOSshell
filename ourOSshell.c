@@ -7,30 +7,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-//***********************************************
-//-------------THE PARSER----------------------
-//***********************************************
-/*
-char [] [] theParser(theCommand [])
-{
-char* token = strtok(command, " ");
-while (token) {
-//printf("token: %s\n", token);
-strcpy(argumentsAfterParsing[argumentScroller], token); // move into our arguments array
-token = strtok(NULL, " ");
-argumentScroller= argumentScroller +1;
-}
-
-}
-*/
-//end parser
-
-
-
 int processHandler(char *argument)
 {
     //check if getting string
-    //printf("%s\n", argument);
     printf("%s\n", argument);
 
     int ret;
@@ -71,11 +50,10 @@ int processHandler(char *argument)
 int main(){
 
     //opening ascii art
-    printf("  ,---. ,--.          ,--,--. \n");
-    printf(" '   .-'|  ,---. ,---.|  |  | \n");
-    printf("  .  `-.|  .-.  | .-. |  |  | \n");
-    printf(" .-'    |  | |  |   --|  |  | \n");
-    printf(" `-----'`--' `--'`----`--`--' \n");
+    printf(" _____    _____         _ \n");
+    printf("|   __|  | __  |___ ___| |_\n");
+    printf("|  [__   | __ -| .'|_ -|   |\n");
+    printf("|_____|  |_____|__,|___|_|_|\n");
     printf("\n");
     printf("\n");
 
@@ -135,7 +113,6 @@ int main(){
         }
         //end parser
 
-
         //Using for testing whether arguments are in array
         int r = 0;
         for(r = 0; r < argumentScroller; r++) 
@@ -143,7 +120,7 @@ int main(){
             // printf("arguments %d: %s\n", r, argumentsAfterParsing[r]);
         }
 
-        // Some commands
+        // vim command
         if(strcmp(argumentsAfterParsing[0],"vim")==0)
         {
             //enter text editor
@@ -162,45 +139,6 @@ int main(){
 
         }// end changing directory
 
-        /*
-        //get history index
-        else if(strcmp(argumentsAfterParsing[0],"H")==0)
-        {
-        //Print out history index
-        int it = 0;
-        for(it; it < commandScroller; it++)
-        {
-        printf("Command %d: %s\n", it, historyOfCommands[it]);
-        }
-        }//end history index
-        */
-
-
-        //working on using the index of history commands
-        else if(strcmp(argumentsAfterParsing[0],"use")==0)
-        {
-
-            //printf("This Char: %c\n", argumentsAfterParsing[0][3]);//Testing
-
-            //A now working int cast for second argument...I hate C
-            int x = argumentsAfterParsing[1][0] - '0';
-
-
-            //printf("%d",x);//testing
-
-            //take second argument as # refence to which command in array
-            if(x <= 9 && x >= 0)
-            {
-                char *reusedCommand = historyOfCommands[x];
-
-                //The history command will then become the new command used.
-                printf("Command: %s\n", reusedCommand);
-
-            }
-            //Than we should put parse function in function. Recall on command
-
-        }
-
         //makes directory in current working directory
         else if(strcmp(argumentsAfterParsing[0],"mkdir")==0)
         {
@@ -212,7 +150,7 @@ int main(){
         {
             //These are the things you can do in ourOSshell
             printf("So far you can:\nChange directories 'cd'\nExit 'exit'\nGet cwd 'cwd'\n" 
-                "Use vim 'vim'\nCheck command history 'H'\nMake directory 'mkdir'\n");
+                "Use vim 'vim'\ncycle command history 'h'\nMake directory 'mkdir'\n");
         }
 
         //get current working directory
@@ -232,6 +170,10 @@ int main(){
             processHandler(arg);
         }
 
+        //***********************************************
+        //            START HISTORY MODE CODE
+        //***********************************************
+
         //Typing h gets you into history mode where you can use up arrows
         else if(strcmp(argumentsAfterParsing[0],"h")==0)
         {
@@ -249,21 +191,8 @@ int main(){
                     switch(getchar()){
                         //up
                     case 'A':
-                        // printf("up");
 
-                        //just backspace all the way an reprint everything, reparse and ignore the 1st prompt thing.
-                        //is the way ill do history
-
-                        //for (t =0; t<10; t++)
-                        //{
-                        //printf("\b \b");
-                        //}
-
-                        //trying 
-                        //printf("\r"); /* \r returns the caret to the line start */
-                        //fflush(stdout);
-
-                        //This seems to work really well
+                        //This is key for returning to the correct place on line
                         printf("\33[2K\r");
 
                         printf("--History_Mode-->%s", historyOfCommands[tempScroller]);
@@ -280,13 +209,19 @@ int main(){
 
             }//end while not return
 
-            printf("\n");
+            printf("\n\r");
 
-            //**IMPORTANT
+            fflush(stdout);
+
+            //**IMPORTANT**
             //command = historyOfCommands[tempScroller];// if press enter
             //reparse command and use.
 
         }//end outer elseif flip into h mode
+
+        //***********************************************
+        //            END HISTORY MODE CODE
+        //***********************************************
 
 
     }//end while 
