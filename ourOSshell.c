@@ -187,7 +187,29 @@ int main(){
                     k++;
                 }
 
-
+                for (i = 0; i < commands; ++i) {
+                    // place is where in args the program should
+                    // start running when it gets to the execution
+                    // command
+                    place = commandStarts[i];
+                    
+                    pid = fork();
+                    if(pid == 0) {
+                        //if not last command
+                        if(i < pipes){
+                            if(dup2(pipefds[j + 1], 1) < 0){
+                                perror("dup2");
+                                exit(EXIT_FAILURE);
+                            }
+                        }
+                        
+                        //if not first command&& j!= 2*pipes
+                        if(j != 0 ){
+                            if(dup2(pipefds[j-2], 0) < 0){
+                                perror("dup2");
+                                exit(EXIT_FAILURE);
+                            }
+                        }
 
 
 
