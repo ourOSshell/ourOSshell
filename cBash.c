@@ -20,7 +20,7 @@ int parser(char* str, char* array[], char* ch){
     int i = 0;
     char* token = strtok(str, ch);
     while(token){
-        printf("token: %s\n", token);
+        //printf("token: %s\n", token);
         array[i] = strdup(token);
         token = strtok(NULL, ch);
         i++;
@@ -74,13 +74,23 @@ int main(){
                 }
             }
             //failed attempt
-            //if up arrow get previous command
-            /*else if(ch == 27){
-                if(ch == 65)
-                    printf("up");
-                else if(ch == 66)
-                    printf("down");
-            }*/
+            else if(ch == '\033'){
+                getchar();
+                switch(getchar()){
+                    case 'A':
+                        printf("up");
+                        break;
+                    case 'B':
+                        printf("down");
+                        break;
+                    case 'C':
+                        printf("right");
+                        break;
+                    case 'D':
+                        printf("left");
+                        break;
+                }
+            }
             //else if(ch == 65);
             //if dowm arrow get next command
             //else if(ch == 66){
