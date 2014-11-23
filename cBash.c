@@ -46,18 +46,21 @@ int main(){
     int i;
     for(i=0; i<20; i++) args[i]=NULL;
     int argsLength = 0;
-
-    //temporary values to test exec() call
-    //args[0] = strdup("ls");
-    //args[1] = NULL;
     //return code for fork()
     int rc;
+    //current working directory
+    char cwd[100];
     //do{int c = getchar(); printf("c=%d\n", c);}while(1);
     while(1){
         //clear command string
         command[0] = '\0';
-        //KRED and KRESET change the color of the text
-        printf(KRED "prompt" KRESET "-> ");
+        //get current directory
+        if(getcwd(cwd, sizeof(cwd))){
+            printf("%s%s%s --> ", KRED, cwd, KRESET);
+        }
+        else{
+            printf(KRED "prompt" KRESET "-> ");
+        }
         //Get key strokes directly and stop echo of every key stroke
         system ("/bin/stty raw -echo");
         //while return is not hit
@@ -76,13 +79,23 @@ int main(){
                 }
             }
             //failed attempt
-            //if up arrow get previous command
-            /*else if(ch == 27){
-                if(ch == 65)
-                    printf("up");
-                else if(ch == 66)
-                    printf("down");
-            }*/
+            else if(ch == '\033'){
+                getchar();
+                switch(getchar()){
+                    case 'A':
+                        printf("up");
+                        break;
+                    case 'B':
+                        printf("down");
+                        break;
+                    case 'C':
+                        printf("right");
+                        break;
+                    case 'D':
+                        printf("left");
+                        break;
+                }
+            }
             //else if(ch == 65);
             //if dowm arrow get next command
             //else if(ch == 66){
@@ -200,7 +213,7 @@ int main(){
                     dup2(fd2, STDOUT_FILENO); // get contents from std out and out into file
                     close(fd2); // close file
                     outFound = false;
-                }*/
+                }
     
                 //call exec() to run command
                 execvp(args[0],args);
