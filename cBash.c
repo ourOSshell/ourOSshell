@@ -78,19 +78,24 @@ int main(){
                     command[strlen(command)-1] = '\0';
                 }
             }
-            //failed attempt
+            //arrows
             else if(ch == '\033'){
+                //get rid of '['
                 getchar();
                 switch(getchar()){
+                    //up
                     case 'A':
                         printf("up");
                         break;
+                    //down
                     case 'B':
                         printf("down");
                         break;
+                    //right
                     case 'C':
                         printf("right");
                         break;
+                    //left
                     case 'D':
                         printf("left");
                         break;
