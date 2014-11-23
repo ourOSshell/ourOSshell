@@ -253,10 +253,19 @@ int main(){
 
                         //just backspace all the way an reprint everything, reparse and ignore the 1st prompt thing.
                         //is the way ill do history
-                        for (t =0; t<100; t++)
-                        {
-                            printf("\b \b");
-                        }
+
+                        //for (t =0; t<10; t++)
+                        //{
+                        //printf("\b \b");
+                        //}
+
+                        //trying 
+                        //printf("\r"); /* \r returns the caret to the line start */
+                        //fflush(stdout);
+
+                        //This seems to work really well
+                        printf("\33[2K\r");
+
                         printf("--History_Mode-->%s", historyOfCommands[tempScroller]);
                         //end 
                     }//end switch
@@ -272,6 +281,11 @@ int main(){
             }//end while not return
 
             printf("\n");
+
+            //**IMPORTANT
+            //command = historyOfCommands[tempScroller];// if press enter
+            //reparse command and use.
+
         }//end outer elseif flip into h mode
 
 
