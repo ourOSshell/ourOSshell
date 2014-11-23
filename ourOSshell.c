@@ -117,19 +117,19 @@ int main(){
 
         //printf("This is your string: %s", command);
 
-        /*
+
         //***********************************************
         //-------------THE PARSER-----------------------
         //***********************************************
         char* token = strtok(command, " ");
         while (token) {
-        //printf("token: %s\n", token);
-        strcpy(argumentsAfterParsing[argumentScroller], token); // move into our arguments array
-        token = strtok(NULL, " ");
-        argumentScroller= argumentScroller +1;
+            //printf("token: %s\n", token);
+            strcpy(argumentsAfterParsing[argumentScroller], token); // move into our arguments array
+            token = strtok(NULL, " ");
+            argumentScroller= argumentScroller +1;
         }
         //end parser
-        */
+
 
         //Using for testing whether arguments are in array
         int r = 0;
@@ -168,20 +168,28 @@ int main(){
             }
         }//end history index
 
+
         //working on using the index of history commands
         else if(strcmp(argumentsAfterParsing[0],"use")==0)
         {
 
-            int numb = *((int *)argumentsAfterParsing[1][0]);
+            //printf("This Char: %c\n", argumentsAfterParsing[0][3]);//Testing
+
+            //A now working int cast for second argument...I hate C
+            int x = argumentsAfterParsing[1][0] - '0';
+
+
+            //printf("%d",x);//testing
 
             //take second argument as # refence to which command in array
-            if(numb <= 9 && numb >= 0)
+            if(x <= 9 && x >= 0)
             {
-                char *reusedCommand = historyOfCommands[numb];
+                char *reusedCommand = historyOfCommands[x];
+
+                //The history command will then become the new command used.
                 printf("Command: %s\n", reusedCommand);
 
             }
-
             //Than we should put parse function in function. Recall on command
 
         }
@@ -207,12 +215,6 @@ int main(){
             getcwd(directoriesPath,99);
             printf("%s\n", directoriesPath);
 
-        }
-
-        //doesn't match any commands
-        else if(strcmp(argumentsAfterParsing[0],"")==0)
-        {
-            printf("This is not a command. Check 'help' for commands.\n");
         }
 
         //valid command so use processHandler
