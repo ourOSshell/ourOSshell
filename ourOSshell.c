@@ -79,6 +79,8 @@ int main(){
     printf("\n");
     printf("\n");
 
+    char ch;
+    int t = 0;
     char directoriesPath[100];
     char command[100];
     //The parser will fill this array with our different arguments
@@ -91,6 +93,9 @@ int main(){
     int returnCode; // used for change directory.
 
     while(strcmp(argumentsAfterParsing[0],"exit")!=0){
+
+        //Return to normal capturing of keystrokes
+        system("/bin/stty cooked echo");
 
         //used for moving through the argument array after parsing
         argumentScroller = 0;
@@ -135,7 +140,7 @@ int main(){
         int r = 0;
         for(r = 0; r < argumentScroller; r++) 
         {
-            printf("arguments %d: %s\n", r, argumentsAfterParsing[r]);
+            // printf("arguments %d: %s\n", r, argumentsAfterParsing[r]);
         }
 
         // Some commands
@@ -157,16 +162,18 @@ int main(){
 
         }// end changing directory
 
+        /*
         //get history index
         else if(strcmp(argumentsAfterParsing[0],"H")==0)
         {
-            //Print out history index
-            int it = 0;
-            for(it; it < commandScroller; it++)
-            {
-                printf("Command %d: %s\n", it, historyOfCommands[it]);
-            }
+        //Print out history index
+        int it = 0;
+        for(it; it < commandScroller; it++)
+        {
+        printf("Command %d: %s\n", it, historyOfCommands[it]);
+        }
         }//end history index
+        */
 
 
         //working on using the index of history commands
@@ -217,12 +224,56 @@ int main(){
 
         }
 
+
         //valid command so use processHandler
         else if(strcmp(argumentsAfterParsing[0],"execute")==0)
         {
             char *arg = argumentsAfterParsing[1];
             processHandler(arg);
         }
+
+        //Typing h gets you into history mode where you can use up arrows
+        else if(strcmp(argumentsAfterParsing[0],"h")==0)
+        {
+            printf("--History_Mode--> ");
+
+            system ("/bin/stty raw -echo");
+
+            int tempScroller = 0;
+
+            while((ch = getchar())!='\r'){
+
+                if(ch == '\033'){
+                    //get rid of '['
+                    getchar();
+                    switch(getchar()){
+                        //up
+                    case 'A':
+                        // printf("up");
+
+                        //just backspace all the way an reprint everything, reparse and ignore the 1st prompt thing.
+                        //is the way ill do history
+                        for (t =0; t<100; t++)
+                        {
+                            printf("\b \b");
+                        }
+                        printf("--History_Mode-->%s", historyOfCommands[tempScroller]);
+                        //end 
+                    }//end switch
+                }//end else if
+
+                if(tempScroller == commandScroller)
+                {
+                    tempScroller = 0;
+                }
+
+                tempScroller ++;
+
+            }//end while not return
+
+            printf("\n");
+        }//end outer elseif flip into h mode
+
 
     }//end while 
 
