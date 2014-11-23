@@ -41,6 +41,8 @@ int main(){
     char ch;
     //will hold parsed command string
     char *args[20];
+    char *argsout[5];
+    char *argsin[5];
     int i;
     for(i=0; i<20; i++) args[i]=NULL;
     int argsLength = 0;
@@ -136,21 +138,21 @@ int main(){
         if(strstr(command, ">"))
         {
             outFound = true;
-            parser(command, args, ">");
-            output = args[1];
-            parser(args[0], args, " ");
+            parser(command, argsout, ">");
+            output = argsout[1];
+            strcpy(command, argsout[0]);
         }
         else if(strstr(command, "<"))
         {
             inFound = true;
-            outFound = true;
-            parser(command, args, "<");
-            input = args[1];
-            parser(args[0], args, " ");
+            parser(command, argsin, "<");
+            input = argsin[1];
+            strcpy(command, argsin[0]);
         }
         else
         {
             //parse normally
+            //argsLength = parser(command, args, " ");
         }
         */
 
@@ -182,10 +184,12 @@ int main(){
     
                 //more file redirection code (there are bugs so uncomment to test if you wish)
                 // dont forget to fflush(0);
-                /*if(inFound) // if < is found
+                fflush(0);
+                if(inFound) // if < is found
                 {
                     int fd1 = open(input, O_RDONLY, 0); // open the file
-                    dup2(fd1, STDIN_FILENO); // get contents of file and put into the file stream
+                    // get contents of file and put into the file stream
+                    dup2(fd1, STDIN_FILENO);
                     close(fd1); // close the file
                     inFound = false;
                 }
@@ -207,6 +211,7 @@ int main(){
             //Parent process
             else if(rc>0){
                 wait(NULL);
+                //fflush(0);
             }
         }
     }
