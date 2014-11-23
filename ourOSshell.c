@@ -211,7 +211,38 @@ int main(){
                             }
                         }
 
-
+                        int q;
+                        for(q = 0; q < 2*pipes; q++){
+                            close(pipefds[q]);
+                        }
+                        
+                        // The commands are executed here, 
+                        // but it must be doing it a bit wrong          
+                        if( execvp(args[place], args+place) < 0 ){
+                            perror(*args);
+                            exit(EXIT_FAILURE);
+                        }
+                    }
+                    else if(pid < 0){
+                        perror("error");
+                        exit(EXIT_FAILURE);
+                    }
+                    
+                    j+=2;
+                }
+                
+                for(i = 0; i < 2 * pipes; i++){
+                    close(pipefds[i]);
+                }
+                
+                for(i = 0; i < pipes + 1; i++){
+                    wait(&status);
+                }
+            }
+        }
+        //*********************************************
+        //               END PIPING CODE
+        //*********************************************
 
 
 
