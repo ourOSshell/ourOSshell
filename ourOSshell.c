@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <stdbool.h>
 
 // added for mkdir
 #include <sys/stat.h>
@@ -57,6 +58,8 @@ int main(){
     printf("\n");
     printf("\n");
 
+    // to transition between using past history and new commands
+    bool useHistory = false;                                                  
     char ch;
     int t = 0;
     char directoriesPath[100];
@@ -78,11 +81,23 @@ int main(){
         //used for moving through the argument array after parsing
         argumentScroller = 0;
         userCommandScroller = 0;
-        printf("--PROMPT-->");
+
+        //if just got out of history mode use history command
+        if(useHistory == false)
+        {
+            printf("--PROMPT-->");
+
+            fgets(command, 99, stdin);//instead of scanf, scanf doesnt work for parsing
+        }
+        else
+        {
+            //use  history command
+
+            useHistory = false;//automatically resets after 
+        }
+
 
         int i; 
-        fgets(command, 99, stdin);//instead of scanf, scanf doesnt work for parsing
-
         // remove newline, if present, absolutely needed
         i = strlen(command)-1;
         if( command[ i ] == '\n') 
@@ -144,110 +159,6 @@ int main(){
         {
             int result = mkdir(argumentsAfterParsing[1], 0777);
         }
-        //*********************************************
-        //               START PIPING CODE
-        //*********************************************
-        /*
-        else if(strcmp(argumentsAfterParsing[0],"pipe")==0)
-        {
-            int do_command(char **args, int pipes)
-            {
-                // The number of commands to run
-                const int commands = pipes + 1;
-                int i = 0;
-                
-                int pipefds[2*pipes];
-                
-                for(i = 0; i < pipes; i++)
-                {
-                    if(pipe(pipefds + i*2) < 0)
-                    {
-                        perror("Couldn't Pipe");
-                        exit(EXIT_FAILURE);
-                    }
-                }
-            
-                int j = 0;
-                int k = 0;
-                int s = 1;
-                int place;
-                int commandStarts[10];
-                commandStarts[0] = 0;
-
-                // This loop sets all of the pipes to NULL
-                // And creates an array of where the next
-                // Command starts
-                
-                while (args[k] != NULL){
-                    if(!strcmp(args[k], "|")){
-                        args[k] = NULL;
-                        // printf("args[%d] is now NULL", k);
-                        commandStarts[s] = k+1;
-                        s++;
-                    }
-                    k++;
-                }
-
-                for (i = 0; i < commands; ++i) {
-                    // place is where in args the program should
-                    // start running when it gets to the execution
-                    // command
-                    place = commandStarts[i];
-                    
-                    pid = fork();
-                    if(pid == 0) {
-                        //if not last command
-                        if(i < pipes){
-                            if(dup2(pipefds[j + 1], 1) < 0){
-                                perror("dup2");
-                                exit(EXIT_FAILURE);
-                            }
-                        }
-                        
-                        //if not first command&& j!= 2*pipes
-                        if(j != 0 ){
-                            if(dup2(pipefds[j-2], 0) < 0){
-                                perror("dup2");
-                                exit(EXIT_FAILURE);
-                            }
-                        }
-
-                        int q;
-                        for(q = 0; q < 2*pipes; q++){
-                            close(pipefds[q]);
-                        }
-                        
-                        // The commands are executed here, 
-                        // but it must be doing it a bit wrong          
-                        if( execvp(args[place], args+place) < 0 ){
-                            perror(*args);
-                            exit(EXIT_FAILURE);
-                        }
-                    }
-                    else if(pid < 0){
-                        perror("error");
-                        exit(EXIT_FAILURE);
-                    }
-                    
-                    j+=2;
-                }
-                
-                for(i = 0; i < 2 * pipes; i++){
-                    close(pipefds[i]);
-                }
-                
-                for(i = 0; i < pipes + 1; i++){
-                    wait(&status);
-                }
-            }
-        }
-        */
-        //*********************************************
-        //               END PIPING CODE
-        //*********************************************
-
-
-
 
 
         else if(strcmp(argumentsAfterParsing[0],"help")==0)
@@ -315,11 +226,14 @@ int main(){
 
             printf("\n\r");
 
-            fflush(stdout);
-
             //**IMPORTANT**
             //command = historyOfCommands[tempScroller];// if press enter
-            //reparse command and use.
+            //Upon exit it will reparse this command and try to use if valid.
+
+            //The one you selected will be -1 cause temp scroller adds one on exit
+            char *this = historyOfCommands[tempScroller -1];
+            strcpy(command, this);
+            useHistory = true; 
 
         }//end outer elseif flip into h mode
 
@@ -327,8 +241,112 @@ int main(){
         //            END HISTORY MODE CODE
         //***********************************************
 
+        //*********************************************
+        //               START PIPING CODE
+        //*********************************************
+        /*
+        else if(strcmp(argumentsAfterParsing[0],"pipe")==0)
+        {
+        int do_command(char **args, int pipes)
+        {
+        // The number of commands to run
+        const int commands = pipes + 1;
+        int i = 0;
+
+        int pipefds[2*pipes];
+
+        for(i = 0; i < pipes; i++)
+        {
+        if(pipe(pipefds + i*2) < 0)
+        {
+        perror("Couldn't Pipe");
+        exit(EXIT_FAILURE);
+        }
+        }
+
+        int j = 0;
+        int k = 0;
+        int s = 1;
+        int place;
+        int commandStarts[10];
+        commandStarts[0] = 0;
+
+        // This loop sets all of the pipes to NULL
+        // And creates an array of where the next
+        // Command starts
+
+        while (args[k] != NULL){
+        if(!strcmp(args[k], "|")){
+        args[k] = NULL;
+        // printf("args[%d] is now NULL", k);
+        commandStarts[s] = k+1;
+        s++;
+        }
+        k++;
+        }
+
+
+
+        for (i = 0; i < commands; ++i) {
+        // place is where in args the program should
+        // start running when it gets to the execution
+        // command
+        place = commandStarts[i];
+
+        pid = fork();
+        if(pid == 0) {
+        //if not last command
+        if(i < pipes){
+        if(dup2(pipefds[j + 1], 1) < 0){
+        perror("dup2");
+        exit(EXIT_FAILURE);
+        }
+        }
+
+        //if not first command&& j!= 2*pipes
+        if(j != 0 ){
+        if(dup2(pipefds[j-2], 0) < 0){
+        perror("dup2");
+        exit(EXIT_FAILURE);
+        }
+        }
+
+        int q;
+        for(q = 0; q < 2*pipes; q++){
+        close(pipefds[q]);
+        }
+
+        // The commands are executed here, 
+        // but it must be doing it a bit wrong          
+        if( execvp(args[place], args+place) < 0 ){
+        perror(*args);
+        exit(EXIT_FAILURE);
+        }
+        }
+        else if(pid < 0){
+        perror("error");
+        exit(EXIT_FAILURE);
+        }
+
+        j+=2;
+        }
+
+        for(i = 0; i < 2 * pipes; i++){
+        close(pipefds[i]);
+        }
+
+        for(i = 0; i < pipes + 1; i++){
+        wait(&status);
+        }
+        }
+        }
+        */
+        //*********************************************
+        //               END PIPING CODE
+        //*********************************************
+
 
     }//end while 
 
     return 0;
-}
+}// end main
