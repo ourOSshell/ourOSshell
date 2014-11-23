@@ -11,10 +11,17 @@
 #define KRESET "\x1B[0m"
 
 //Adds a character to the end of a string
-void append(char* str, char ch){
-    int length = strlen(str);
-    str[length] = ch;
-    str[length+1] = '\0';
+void append(char* str, char ch, int pos){
+    int len = strlen(str);
+    char *buf = (char*)malloc(len+1);
+    strncpy(buf, str, pos);
+    len = strlen(buf);
+    buf[len] = ch;
+    buf[len+1] = '\0';
+    len++;
+    strcpy(buf+len, str+pos);
+    strcpy(str, buf);
+    free(buf);
 }
 
 int parser(char* str, char* array[], char* ch){
@@ -133,7 +140,16 @@ int main(){
             //put the char on the string and on the screen
             else{
                 putchar(ch);
-                append(command, ch);
+                j = commandIndex;
+                while(j<strlen(command)){
+                    printf("%c", command[j]);
+                    j++;
+                }
+                while(j>commandIndex){
+                    printf("\b");
+                    j--;
+                }
+                append(command, ch, commandIndex);
                 commandIndex++;
             }
         }
@@ -141,6 +157,7 @@ int main(){
         system("/bin/stty cooked echo");
         //to make sure we have the right string in the end
         printf("\n");
+        if(strlen(command)==0) continue;
 
         // if(strstr(command, ">"))
         // {
