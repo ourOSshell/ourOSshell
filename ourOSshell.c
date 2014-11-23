@@ -144,7 +144,34 @@ int main(){
         {
             int result = mkdir(argumentsAfterParsing[1], 0777);
         }
-
+//*********************************************
+        //               START PIPING CODE
+        //*********************************************
+        else if(strcmp(argumentsAfterParsing[0],"pipe")==0)
+        {
+            int do_command(char **args, int pipes)
+            {
+                // The number of commands to run
+                const int commands = pipes + 1;
+                int i = 0;
+                
+                int pipefds[2*pipes];
+                
+                for(i = 0; i < pipes; i++)
+                {
+                    if(pipe(pipefds + i*2) < 0)
+                    {
+                        perror("Couldn't Pipe");
+                        exit(EXIT_FAILURE);
+                    }
+                }
+            
+                int j = 0;
+                int k = 0;
+                int s = 1;
+                int place;
+                int commandStarts[10];
+                commandStarts[0] = 0;
 
         else if(strcmp(argumentsAfterParsing[0],"help")==0)
         {
