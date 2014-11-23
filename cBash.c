@@ -43,17 +43,20 @@ int main(){
     char *args[20];
     char *argsout[5];
     char *argsin[5];
-    int i;
+    int i,j;
     for(i=0; i<20; i++) args[i]=NULL;
     int argsLength = 0;
     //return code for fork()
     int rc;
     //current working directory
     char cwd[100];
+    //index into command string
+    int commandIndex = 0;
     //do{int c = getchar(); printf("c=%d\n", c);}while(1);
     while(1){
         //clear command string
         command[0] = '\0';
+        commandIndex = 0;
         //get current directory
         if(getcwd(cwd, sizeof(cwd))){
             printf("%s%s%s --> ", KRED, cwd, KRESET);
@@ -73,38 +76,65 @@ int main(){
             else if(ch == 127){
                 if(strlen(command)>0){
                     //remove last char from screen
-                    printf("\b \b");
+                    j = commandIndex;
+                    printf("\b");
+                    while(1){
+                        if(j==strlen(command)){
+                            printf(" ");
+                            break;
+                        }
+                        printf("%c", command[j]);
+                        j++;
+                    }
+                    while(j>=commandIndex){
+                        printf("\b");
+                        j--;
+                    }
                     //remove last char from behind the scenes
-                    command[strlen(command)-1] = '\0';
+                    j = commandIndex;
+                    while(j<=strlen(command)){
+                        command[j-1] = command[j];
+                        j++;
+                    }
+                    commandIndex--;
                 }
             }
-            //failed attempt
+            //arrows
             else if(ch == '\033'){
+                //get rid of '['
                 getchar();
                 switch(getchar()){
+                    //up
                     case 'A':
                         printf("up");
                         break;
+                    //down
                     case 'B':
                         printf("down");
                         break;
+                    //right
                     case 'C':
-                        printf("right");
+                        //printf("right");
+                        if(commandIndex<strlen(command)){
+                            commandIndex++;
+                            printf("\033[C");
+                        }
                         break;
+                    //left
                     case 'D':
-                        printf("left");
+                        //printf("left");
+                        if(commandIndex>0){
+                            commandIndex--;
+                            printf("\033[D");
+                        }
                         break;
                 }
             }
-            //else if(ch == 65);
-            //if dowm arrow get next command
-            //else if(ch == 66){
-                //printf("down");
-            //}
             //put the char on the string and on the screen
             else{
                 putchar(ch);
                 append(command, ch);
+                commandIndex++;
             }
         }
         //Return to normal capturing of keystrokes
