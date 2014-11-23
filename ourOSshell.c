@@ -144,7 +144,7 @@ int main(){
         {
             int result = mkdir(argumentsAfterParsing[1], 0777);
         }
-//*********************************************
+        //*********************************************
         //               START PIPING CODE
         //*********************************************
         else if(strcmp(argumentsAfterParsing[0],"pipe")==0)
@@ -172,6 +172,28 @@ int main(){
                 int place;
                 int commandStarts[10];
                 commandStarts[0] = 0;
+
+                // This loop sets all of the pipes to NULL
+                // And creates an array of where the next
+                // Command starts
+                
+                while (args[k] != NULL){
+                    if(!strcmp(args[k], "|")){
+                        args[k] = NULL;
+                        // printf("args[%d] is now NULL", k);
+                        commandStarts[s] = k+1;
+                        s++;
+                    }
+                    k++;
+                }
+
+
+
+
+
+
+
+
 
         else if(strcmp(argumentsAfterParsing[0],"help")==0)
         {
