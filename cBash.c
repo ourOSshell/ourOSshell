@@ -37,6 +37,15 @@ int parser(char* str, char* array[], char* ch){
 }
 
 int main(){
+
+    //opening ascii art
+    printf(" _____    _____         _ \n");
+    printf("|   __|  | __  |___ ___| |_\n");
+    printf("|  [__   | __ -| .'|_ -|   |\n");
+    printf("|_____|  |_____|__,|___|_|_|\n");
+    printf("\n");
+    printf("\n");
+
     char* input;
     char* output;
     bool outFound = false;
