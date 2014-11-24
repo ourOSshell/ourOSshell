@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stddef.h>
 #include <string.h>
 #include <stdbool.h>
 #include <sys/wait.h>
@@ -36,6 +37,33 @@ int parser(char* str, char* array[], char* ch){
     return i;
 }
 
+char *replace_substr(const char *str, const char *old, const char *new){
+    char *ret, *r;
+    const char *p, *q;
+    size_t oldlen = strlen(old);
+    size_t i, retlen, newlen = strlen(new);
+    
+    if(oldlen != newlen){
+        for(i=0, p=str; (q=strstr(p, old)) != NULL; p=q+oldlen)
+            i++;
+        retlen = p - str + strlen(p) + i * (newlen - oldlen);
+    }
+    else retlen = strlen(str);
+
+    if((ret = malloc(retlen+1)) == NULL)
+        return NULL;
+
+    for(r=ret, p=str; (q=strstr(p, old)) != NULL; p=q+oldlen){
+        ptrdiff_t l = q - p;
+        memcpy(r, p, l);
+        r += l;
+        memcpy(r, new, newlen);
+        r += newlen;
+    }
+    strcpy(r, p);
+    return ret;
+}
+
 int main(){
 
     //opening ascii art
@@ -65,7 +93,9 @@ int main(){
     //return code for fork()
     int rc;
     //current working directory
-    char cwd[100];
+    char temp[100];
+    char *cwd = malloc(100);
+    char *homedir = getenv("HOME");
     //index into command string
     int commandIndex = 0;
     //do{int c = getchar(); printf("c=%d\n", c);}while(1);
@@ -74,7 +104,9 @@ int main(){
         command[0] = '\0';
         commandIndex = 0;
         //get current directory
-        if(getcwd(cwd, sizeof(cwd))){
+        if(getcwd(temp, sizeof(temp))){
+            cwd = temp;
+            cwd = replace_substr(cwd, homedir, "~");
             printf("%s%s%s --> ", KRED, cwd, KRESET);
         }
         else{
@@ -235,10 +267,12 @@ int main(){
         {
             if(argsLength == 1) //if there is no argument go one level up.
             {
-                chdir("/");
+                chdir(homedir);
             }    
             else 
             {
+                args[1] = replace_substr(args[1], "~", homedir);
+                printf("%s\n", args[1]);
                 chdir(args[1]); //if there are arguments change the directory to whatever the argument is
             }
         }
