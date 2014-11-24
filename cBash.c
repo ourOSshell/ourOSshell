@@ -18,7 +18,7 @@
 #define KRESET   "\x1B[0m"
 
 //Adds a character to the end of a string
-void append(char* str, char ch, int pos){
+/*void append(char* str, char ch, int pos){
     int len = strlen(str);
     char *buf = (char*)malloc(len+1);
     strncpy(buf, str, pos);
@@ -29,7 +29,13 @@ void append(char* str, char ch, int pos){
     strcpy(buf+len, str+pos);
     strcpy(str, buf);
     free(buf);
-}
+}*/
+
+void append(char* str, char ch){
+     int length = strlen(str);
+     str[length] = ch;
+     str[length+1] = '\0';
+ }
 
 int parser(char* str, char* array[], char* ch){
     int i = 0;
@@ -114,12 +120,14 @@ int main(int argc, char *argv[]){
     char *cwd = malloc(100);
     char *homedir = getenv("HOME");
     //index into command string
-    int commandIndex = 0;
+    //int commandIndex = 0;
     //do{int c = getchar(); printf("c=%d\n", c);}while(1);
     while(1){
         //clear command string
         command[0] = '\0';
-        commandIndex = 0;
+        outFound = false;
+        inFound = false;
+        //commandIndex = 0;
         //get current directory
         if(getcwd(temp, sizeof(temp))){
             cwd = temp;
@@ -140,6 +148,12 @@ int main(int argc, char *argv[]){
             //if backspace is hit
             else if(ch == 127){
                 if(strlen(command)>0){
+                    //remove last char from screen
+                    printf("\b \b");
+                    //remove last char from behind the scenes
+                    command[strlen(command)-1] = '\0';
+                }
+                /*if(commandIndex>0){
                     //remove last char from screen
                     j = commandIndex;
                     printf("\b");
@@ -162,7 +176,7 @@ int main(int argc, char *argv[]){
                         j++;
                     }
                     commandIndex--;
-                }
+                }*/
             }
             //arrows
             else if(ch == '\033'){
@@ -180,25 +194,25 @@ int main(int argc, char *argv[]){
                     //right
                     case 'C':
                         //printf("right");
-                        if(commandIndex<strlen(command)){
+                        /*if(commandIndex<strlen(command)){
                             commandIndex++;
                             printf("\033[C");
-                        }
+                        }*/
                         break;
                     //left
                     case 'D':
                         //printf("left");
-                        if(commandIndex>0){
+                        /*if(commandIndex>0){
                             commandIndex--;
                             printf("\033[D");
-                        }
+                        }*/
                         break;
                 }
             }
             //put the char on the string and on the screen
             else{
                 putchar(ch);
-                j = commandIndex;
+                /*j = commandIndex;
                 while(j<strlen(command)){
                     printf("%c", command[j]);
                     j++;
@@ -206,9 +220,9 @@ int main(int argc, char *argv[]){
                 while(j>commandIndex){
                     printf("\b");
                     j--;
-                }
-                append(command, ch, commandIndex);
-                commandIndex++;
+                }*/
+                append(command, ch);
+                //commandIndex++;
             }
         }
         //Return to normal capturing of keystrokes
