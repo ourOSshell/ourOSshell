@@ -251,19 +251,19 @@ int main(int argc, char *argv[]){
         argsLength = argsIndex;*/
 
         // file redirection code (there are bugs so uncomment to test if you wish)
-        /*
+        
         if(strstr(command, ">"))
         {
             outFound = true;
             parser(command, argsout, ">");
-            output = argsout[1];
+            output = replace_substr(argsout[1], " ", "");
             strcpy(command, argsout[0]);
         }
         else if(strstr(command, "<"))
         {
             inFound = true;
             parser(command, argsin, "<");
-            input = argsin[1];
+            input = replace_substr(argsin[1], " ", "");
             strcpy(command, argsin[0]);
         }
         else
@@ -271,7 +271,7 @@ int main(int argc, char *argv[]){
             //parse normally
             //argsLength = parser(command, args, " ");
         }
-        */
+        
 
         argsLength = parser(command, args, " ");
 
