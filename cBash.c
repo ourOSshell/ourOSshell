@@ -79,6 +79,7 @@ int main(int argc, char *argv[]){
     uname(&ubuffer);
 
     //opening ascii art
+    system("reset"); // clears screen upon program execution
     printf(KCYAN " _____    _____         _ \n");
     printf("|   __|  | __  |___ ___| |_\n");
     printf("|  [__   | __ -| .'|_ -|   |\n");
@@ -215,23 +216,6 @@ int main(int argc, char *argv[]){
         //to make sure we have the right string in the end
         printf("\n");
         if(strlen(command)==0) continue;
-
-        // if(strstr(command, ">"))
-        // {
-        //     outFound = true;
-        //     printf("found > and set outFound to true");
-        //     printf("\n");
-        //     printf("args[0]: ", args[0]);
-        //     printf("\n");
-        //     printf("args[1]: ", args[1]);
-        //     printf("\n");
-        //     printf("args[2]: ", args[2]);
-        // }
-        // else if(strstr(command, "<"))
-        // {
-        //     inFound = true;
-        //     printf("found < and set inFound to true");
-        // }
         
         //parse(command);
         //index into array of arguments
@@ -239,16 +223,6 @@ int main(int argc, char *argv[]){
         for(argsIndex = 0; argsIndex<argsLength; argsIndex++){
             args[argsIndex] = NULL;
         }
-        /*argsIndex = 0;
-        char* token = strtok(command, " ");
-        while (token){
-            //printf("token: %s\n", token);
-            args[argsIndex] = strdup(token);
-            //strcpy(args[argsIndex], token); // move into our arguments array
-            token = strtok(NULL, " ");
-            argsIndex = argsIndex + 1;
-        }
-        argsLength = argsIndex;*/
 
         // file redirection code (there are bugs so uncomment to test if you wish)
         
@@ -266,11 +240,11 @@ int main(int argc, char *argv[]){
             input = replace_substr(argsin[1], " ", "");
             strcpy(command, argsin[0]);
         }
-        else
-        {
+        //else
+        //{
             //parse normally
             //argsLength = parser(command, args, " ");
-        }
+        //}
         
 
         argsLength = parser(command, args, " ");
