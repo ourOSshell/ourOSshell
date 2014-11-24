@@ -6,10 +6,16 @@
 #include <stdbool.h>
 #include <sys/wait.h>
 #include <fcntl.h>
+#include <sys/utsname.h>
 
 //colors for printing to screen
-#define KRED "\x1B[31m"
-#define KRESET "\x1B[0m"
+#define KRED     "\x1B[31m"
+#define KGREEN   "\x1B[32"
+#define KYELLOW  "\x1b[33m"
+#define KBLUE    "\x1b[34m"
+#define KMAGENTA "\x1b[35m"
+#define KCYAN    "\x1b[36m"
+#define KRESET   "\x1B[0m"
 
 //Adds a character to the end of a string
 void append(char* str, char ch, int pos){
@@ -64,15 +70,25 @@ char *replace_substr(const char *str, const char *old, const char *new){
     return ret;
 }
 
-int main(){
+int main(int argc, char *argv[]){
+
+    struct utsname ubuffer;
+    //if(argc < 1){
+      //  fprintf(stderr, "%s: Not enough arguments");
+        //return(-1);
+    uname(&ubuffer);
 
     //opening ascii art
-    printf(" _____    _____         _ \n");
+    printf(KCYAN " _____    _____         _ \n");
     printf("|   __|  | __  |___ ___| |_\n");
     printf("|  [__   | __ -| .'|_ -|   |\n");
     printf("|_____|  |_____|__,|___|_|_|\n");
-    printf("\n");
-    printf("\n");
+    printf("\nSystem name:  %s\n", ubuffer.sysname);
+    printf("Host name: %s\n", ubuffer.nodename);
+    printf("OS Release: %s\n", ubuffer.release);
+    printf("OS Version: %s\n", ubuffer.version);
+    printf("CPU Type: %s\n", ubuffer.machine);
+    printf("\n" KRESET);
 
     char* input;
     char* output;
