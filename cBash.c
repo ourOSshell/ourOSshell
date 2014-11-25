@@ -11,7 +11,7 @@
 
 //colors for printing to screen
 #define KRED     "\x1B[31m"
-#define KGREEN   "\x1B[32"
+#define KGREEN   "\x1B[32m"
 #define KYELLOW  "\x1b[33m"
 #define KBLUE    "\x1b[34m"
 #define KMAGENTA "\x1b[35m"
@@ -89,7 +89,7 @@ int main(int argc, char *argv[]){
     printf(KCYAN " _____    _____         _ \n");
     printf("|   __|  | __  |___ ___| |_\n");
     printf("|  [__   | __ -| .'|_ -|   |\n");
-    printf("|_____|  |_____|__,|___|_|_|\n");
+    printf("|_____|  |_____|__,|___|_|_|\n" KGREEN);
     printf("\nSystem name:  %s\n", ubuffer.sysname);
     printf("Host name: %s\n", ubuffer.nodename);
     printf("OS Release: %s\n", ubuffer.release);
