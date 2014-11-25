@@ -7,10 +7,11 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <sys/utsname.h>
+#include <dirent.h>
 
 //colors for printing to screen
 #define KRED     "\x1B[31m"
-#define KGREEN   "\x1B[32"
+#define KGREEN   "\x1B[32m"
 #define KYELLOW  "\x1b[33m"
 #define KBLUE    "\x1b[34m"
 #define KMAGENTA "\x1b[35m"
@@ -89,7 +90,7 @@ int main(int argc, char *argv[]){
     printf(KCYAN " _____    _____         _ \n");
     printf("|   __|  | __  |___ ___| |_\n");
     printf("|  [__   | __ -| .'|_ -|   |\n");
-    printf("|_____|  |_____|__,|___|_|_|\n");
+    printf("|_____|  |_____|__,|___|_|_|\n" KGREEN);
     printf("\nSystem name:  %s\n", ubuffer.sysname);
     printf("Host name: %s\n", ubuffer.nodename);
     printf("OS Release: %s\n", ubuffer.release);
@@ -116,6 +117,7 @@ int main(int argc, char *argv[]){
     char* output;
     bool outFound = false;
     bool inFound = false;
+    int i,j,k;
     //whole command which must latter be parsed.
     //Should be an array of strings
     char command[100] = "\0";
@@ -123,31 +125,52 @@ int main(int argc, char *argv[]){
     char ch;
     //will hold parsed command string
     char *args[20];
+    for(i=0; i<20; i++) args[i]=NULL;
     char *argsout[5];
     char *argsin[5];
-    int i,j;
-    for(i=0; i<20; i++) args[i]=NULL;
     int argsLength = 0;
     //return code for fork()
     int rc;
     //current working directory
     char temp[100];
     char *cwd = malloc(100);
+    char *prompt = malloc(100);
     char *homedir = getenv("HOME");
+    DIR *d;
+    struct dirent *dir;
+    char *dirContents[1000];
+    char *matchedContents[1000];
+    int matchedLen;
+    char *searchFor = malloc(20);
+    char searchTemp[20];
+    char *searchResult;
+    char *currentPath = malloc(100);
+    char currentTemp[100];
+    char nextPath[100];
+    char *pathArray[50];
+    char *pathTemp = malloc(100);
+    //char *pathTemp2;
+    int pathIndex;
+    //for(i=0; i<100; i++) dirContents[i]=NULL;
     //index into command string
     //int commandIndex = 0;
     //do{int c = getchar(); printf("c=%d\n", c);}while(1);
     while(1){
         //clear command string
         command[0] = '\0';
+        currentPath = "/bin";
+        strcpy(nextPath, "/bin/");
+        strcpy(searchTemp, "");
+        searchFor = "";
         outFound = false;
         inFound = false;
+        pathIndex = 0;
         //commandIndex = 0;
         //get current directory
         if(getcwd(temp, sizeof(temp))){
             cwd = temp;
-            cwd = replace_substr(cwd, homedir, "~");
-            printf("%s%s%s --> ", KRED, cwd, KRESET);
+            prompt = replace_substr(cwd, homedir, "~");
+            printf("%s%s%s --> ", KRED, prompt, KRESET);
         }
         else{
             printf(KRED "prompt" KRESET "-> ");
@@ -162,17 +185,69 @@ int main(int argc, char *argv[]){
         //   START INPUT
         //********************************
         while((ch = getchar())!='\r'){
-            if(ch == '\t'){
+    	    if(ch == '\t'){
+                system("/bin/stty cooked echo");
+                //printf("   %s  %s  %s\n", currentPath, nextPath, searchFor);
                 //do tab complete
-                printf("%s", command);
+                d = opendir(currentPath);
+                if(d){
+                    j = 0;
+                    k = 0;
+                    while((dir = readdir(d))!=NULL){
+                        dirContents[j] = dir->d_name;
+                        searchResult = strstr(dirContents[j], searchFor);
+                        if((searchResult-dirContents[j])==0){
+                            matchedContents[k] = dirContents[j];
+                            k++;
+                        }
+                        //if(j%3==0) printf("\n");
+                        j++;
+                    }
+                    closedir(d);
+                    matchedLen = k;
+                    if(matchedLen>1){
+                        printf("\n");
+                        for(k = 0; k<matchedLen; k++){
+                            printf("%s\n", matchedContents[k]);
+                        }
+                        printf("\n%s%s%s --> %s", KRED, prompt, KRESET, command);
+                    }
+                    else if(matchedLen==1){
+                        //printf("works");
+                        for(k=0; k<strlen(searchFor); k++){
+                            printf("\b \b");
+                            command[strlen(command)-1] = '\0';
+                            nextPath[strlen(nextPath)-1] = '\0';
+                        }
+                        printf("%s", matchedContents[0]);
+                        for(k=0; k<strlen(matchedContents[0]); k++){
+                            append(command, *(matchedContents[0]+k));
+                            append(nextPath, *(matchedContents[0]+k));
+                        }
+                        strcpy(pathTemp, nextPath);
+                        pathIndex = parser(pathTemp, pathArray, "/");
+                        searchFor = pathArray[pathIndex-1];
+                    }
+                    matchedLen=0;
+                }
+                //else{printf("can't open dir");}
+                //printf("   %s  %s  %s\n", currentPath, nextPath, searchFor);
+                system ("/bin/stty raw -echo");
+                //printf("%s", command);
             }
             //if backspace is hit
             else if(ch == 127){
                 if(strlen(command)>0){
                     //remove last char from screen
                     printf("\b \b");
+                    //if(command[strlen(command)-1]=='/'||command[strlen(command)-1]==' '){
+                      //  strcpy(searchFor
                     //remove last char from behind the scenes
                     command[strlen(command)-1] = '\0';
+                    nextPath[strlen(nextPath)-1] = '\0';
+                    strcpy(pathTemp, nextPath);
+                    pathIndex = parser(pathTemp, pathArray, "/");
+                    searchFor = pathArray[pathIndex-1];
                 }
                 /*if(commandIndex>0){
                 //remove last char from screen
@@ -241,6 +316,27 @@ int main(int argc, char *argv[]){
             //put the char on the string and on the screen
             else{
                 putchar(ch);
+                if(ch==' '){
+                    currentPath = cwd;
+                    append(currentPath, '/');
+                    strcpy(nextPath, currentPath);
+                    searchTemp[0] = '\0';
+                    searchFor = "";
+                }
+                else{
+                    append(nextPath, ch);
+                    //append(searchTemp, ch);
+                    //pathTemp = nextPath;
+                    strcpy(pathTemp, nextPath);
+                    pathIndex = parser(pathTemp, pathArray, "/");
+                    searchFor = pathArray[pathIndex-1];
+                }
+                if(ch=='/'){
+                    strcpy(currentTemp, nextPath);
+                    currentPath = currentTemp;
+                    searchTemp[0] = '\0';
+                    searchFor = "";
+                }
                 /*j = commandIndex;
                 while(j<strlen(command)){
                 printf("%c", command[j]);
@@ -286,6 +382,7 @@ int main(int argc, char *argv[]){
         system("/bin/stty cooked echo");
         //to make sure we have the right string in the end
         printf("\n");
+        //printf("%s\n", command);
         if(strlen(command)==0) continue;
 
         //parse(command);
