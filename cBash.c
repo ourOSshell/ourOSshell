@@ -123,6 +123,8 @@ int main(int argc, char *argv[]){
     DIR *d;
     struct dirent *dir;
     char *dirContents[100];
+    char *currentPath = malloc(100);
+    char nextPath[100];
     //for(i=0; i<100; i++) dirContents[i]=NULL;
     //index into command string
     //int commandIndex = 0;
@@ -130,6 +132,8 @@ int main(int argc, char *argv[]){
     while(1){
         //clear command string
         command[0] = '\0';
+        currentPath = "/";
+        strcpy(nextPath, "/");
         outFound = false;
         inFound = false;
         //commandIndex = 0;
@@ -148,9 +152,9 @@ int main(int argc, char *argv[]){
         while((ch = getchar())!='\r'){
     	    if(ch == '\t'){
                 system("/bin/stty cooked echo");
-                printf("\n");
+                printf("   %s  %s\n", currentPath, nextPath);
                 //do tab complete
-                d = opendir(cwd);
+                d = opendir(currentPath);
                 if(d){
                     j = 0;
                     while((dir = readdir(d))!=NULL){
@@ -162,7 +166,7 @@ int main(int argc, char *argv[]){
                     closedir(d);
                 }
                 system ("/bin/stty raw -echo");
-                printf("\n%s%s%s --> ", KRED, prompt, KRESET);
+                printf("\n%s%s%s --> %s", KRED, prompt, KRESET, command);
                 //printf("%s", command);
             }
             //if backspace is hit
@@ -172,6 +176,7 @@ int main(int argc, char *argv[]){
                     printf("\b \b");
                     //remove last char from behind the scenes
                     command[strlen(command)-1] = '\0';
+                    nextPath[strlen(nextPath)-1] = '\0';
                 }
                 /*if(commandIndex>0){
                     //remove last char from screen
@@ -232,6 +237,15 @@ int main(int argc, char *argv[]){
             //put the char on the string and on the screen
             else{
                 putchar(ch);
+                if(ch==' '){
+                    currentPath = cwd;
+                    append(currentPath, '/');
+                    strcpy(nextPath, currentPath);
+                }
+                else append(nextPath, ch);
+                if(ch=='/'){
+                    currentPath = nextPath;
+                }
                 /*j = commandIndex;
                 while(j<strlen(command)){
                     printf("%c", command[j]);
