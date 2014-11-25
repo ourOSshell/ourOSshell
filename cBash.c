@@ -7,6 +7,7 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <sys/utsname.h>
+#include <dirent.h>
 
 //colors for printing to screen
 #define KRED     "\x1B[31m"
@@ -100,6 +101,7 @@ int main(int argc, char *argv[]){
     char* output;
     bool outFound = false;
     bool inFound = false;
+    int i,j;
     //whole command which must latter be parsed.
     //Should be an array of strings
     char command[100] = "\0";
@@ -107,17 +109,21 @@ int main(int argc, char *argv[]){
     char ch;
     //will hold parsed command string
     char *args[20];
+    for(i=0; i<20; i++) args[i]=NULL;
     char *argsout[5];
     char *argsin[5];
-    int i,j;
-    for(i=0; i<20; i++) args[i]=NULL;
     int argsLength = 0;
     //return code for fork()
     int rc;
     //current working directory
     char temp[100];
     char *cwd = malloc(100);
+    char *prompt = malloc(100);
     char *homedir = getenv("HOME");
+    DIR *d;
+    struct dirent *dir;
+    char *dirContents[100];
+    //for(i=0; i<100; i++) dirContents[i]=NULL;
     //index into command string
     //int commandIndex = 0;
     //do{int c = getchar(); printf("c=%d\n", c);}while(1);
@@ -130,8 +136,8 @@ int main(int argc, char *argv[]){
         //get current directory
         if(getcwd(temp, sizeof(temp))){
             cwd = temp;
-            cwd = replace_substr(cwd, homedir, "~");
-            printf("%s%s%s --> ", KRED, cwd, KRESET);
+            prompt = replace_substr(cwd, homedir, "~");
+            printf("%s%s%s --> ", KRED, prompt, KRESET);
         }
         else{
             printf(KRED "prompt" KRESET "-> ");
@@ -141,8 +147,23 @@ int main(int argc, char *argv[]){
         //while return is not hit
         while((ch = getchar())!='\r'){
     	    if(ch == '\t'){
+                system("/bin/stty cooked echo");
+                printf("\n");
                 //do tab complete
-                printf("%s", command);
+                d = opendir(cwd);
+                if(d){
+                    j = 0;
+                    while((dir = readdir(d))!=NULL){
+                        dirContents[j] = dir->d_name;
+                        printf("%s\n", dirContents[j]);
+                        //if(j%3==0) printf("\n");
+                        j++;
+                    }
+                    closedir(d);
+                }
+                system ("/bin/stty raw -echo");
+                printf("\n%s%s%s --> ", KRED, prompt, KRESET);
+                //printf("%s", command);
             }
             //if backspace is hit
             else if(ch == 127){
