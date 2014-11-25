@@ -101,7 +101,7 @@ int main(int argc, char *argv[]){
     char* output;
     bool outFound = false;
     bool inFound = false;
-    int i,j;
+    int i,j,k;
     //whole command which must latter be parsed.
     //Should be an array of strings
     char command[100] = "\0";
@@ -123,6 +123,8 @@ int main(int argc, char *argv[]){
     DIR *d;
     struct dirent *dir;
     char *dirContents[1000];
+    char *matchedContents[1000];
+    int matchedLen;
     char *searchFor = malloc(20);
     char searchTemp[20];
     char *searchResult;
@@ -162,24 +164,51 @@ int main(int argc, char *argv[]){
         while((ch = getchar())!='\r'){
     	    if(ch == '\t'){
                 system("/bin/stty cooked echo");
-                printf("   %s  %s  %s\n", currentPath, nextPath, searchFor);
+                //printf("   %s  %s  %s\n", currentPath, nextPath, searchFor);
                 //do tab complete
                 d = opendir(currentPath);
                 if(d){
                     j = 0;
+                    k = 0;
                     while((dir = readdir(d))!=NULL){
                         dirContents[j] = dir->d_name;
                         searchResult = strstr(dirContents[j], searchFor);
                         if((searchResult-dirContents[j])==0){
-                            printf("%s\n", dirContents[j]);
+                            matchedContents[k] = dirContents[j];
+                            k++;
                         }
                         //if(j%3==0) printf("\n");
                         j++;
                     }
                     closedir(d);
+                    matchedLen = k;
+                    if(matchedLen>1){
+                        printf("\n");
+                        for(k = 0; k<matchedLen; k++){
+                            printf("%s\n", matchedContents[k]);
+                        }
+                        printf("\n%s%s%s --> %s", KRED, prompt, KRESET, command);
+                    }
+                    else if(matchedLen==1){
+                        //printf("works");
+                        for(k=0; k<strlen(searchFor); k++){
+                            printf("\b \b");
+                            command[strlen(command)-1] = '\0';
+                            nextPath[strlen(nextPath)-1] = '\0';
+                        }
+                        printf("%s", matchedContents[0]);
+                        for(k=0; k<strlen(matchedContents[0]); k++){
+                            append(command, *(matchedContents[0]+k));
+                            append(nextPath, *(matchedContents[0]+k));
+                        }
+                        strcpy(pathTemp, nextPath);
+                        pathIndex = parser(pathTemp, pathArray, "/");
+                        searchFor = pathArray[pathIndex-1];
+                //printf("   %s  %s  %s\n", currentPath, nextPath, searchFor);
+                    }
+                    matchedLen=0;
                 }
                 system ("/bin/stty raw -echo");
-                printf("\n%s%s%s --> %s", KRED, prompt, KRESET, command);
                 //printf("%s", command);
             }
             //if backspace is hit
@@ -292,6 +321,7 @@ int main(int argc, char *argv[]){
         system("/bin/stty cooked echo");
         //to make sure we have the right string in the end
         printf("\n");
+        //printf("%s\n", command);
         if(strlen(command)==0) continue;
 
         // if(strstr(command, ">"))
