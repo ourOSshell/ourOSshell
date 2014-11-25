@@ -207,6 +207,7 @@ int main(int argc, char *argv[]){
                     //up
                 case 'A':
                     // printf("up");
+
                     //********************************
                     //   HISTORY MODE
                     //********************************
@@ -215,7 +216,7 @@ int main(int argc, char *argv[]){
                     printf("\33[2K\r");
 
                     //printf("--History_Mode-->%s", historyOfCommands[tempScroller]);
-                    printf("%s%s%s -->%s", KRED, cwd, KRESET, historyOfCommands[tempScroller]);
+                    printf("%s%s%s --> %s", KRED, cwd, KRESET, historyOfCommands[tempScroller]);
 
                 }//end switch
 
@@ -225,6 +226,10 @@ int main(int argc, char *argv[]){
                 }
 
                 tempScroller ++;
+
+                //The one you selected will be -1 cause temp scroller adds one on exit
+                char *this = historyOfCommands[tempScroller -1];
+                strcpy(command, this);
 
             }//end else if
 
