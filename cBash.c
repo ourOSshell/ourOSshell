@@ -19,23 +19,23 @@
 
 //Adds a character to the end of a string
 /*void append(char* str, char ch, int pos){
-    int len = strlen(str);
-    char *buf = (char*)malloc(len+1);
-    strncpy(buf, str, pos);
-    len = strlen(buf);
-    buf[len] = ch;
-    buf[len+1] = '\0';
-    len++;
-    strcpy(buf+len, str+pos);
-    strcpy(str, buf);
-    free(buf);
+int len = strlen(str);
+char *buf = (char*)malloc(len+1);
+strncpy(buf, str, pos);
+len = strlen(buf);
+buf[len] = ch;
+buf[len+1] = '\0';
+len++;
+strcpy(buf+len, str+pos);
+strcpy(str, buf);
+free(buf);
 }*/
 
 void append(char* str, char ch){
-     int length = strlen(str);
-     str[length] = ch;
-     str[length+1] = '\0';
- }
+    int length = strlen(str);
+    str[length] = ch;
+    str[length+1] = '\0';
+}
 
 int parser(char* str, char* array[], char* ch){
     int i = 0;
@@ -54,7 +54,7 @@ char *replace_substr(const char *str, const char *old, const char *new){
     const char *p, *q;
     size_t oldlen = strlen(old);
     size_t i, retlen, newlen = strlen(new);
-    
+
     if(oldlen != newlen){
         for(i=0, p=str; (q=strstr(p, old)) != NULL; p=q+oldlen)
             i++;
@@ -80,8 +80,8 @@ int main(int argc, char *argv[]){
 
     struct utsname ubuffer;
     //if(argc < 1){
-      //  fprintf(stderr, "%s: Not enough arguments");
-        //return(-1);
+    //  fprintf(stderr, "%s: Not enough arguments");
+    //return(-1);
     uname(&ubuffer);
 
     //opening ascii art
@@ -96,6 +96,21 @@ int main(int argc, char *argv[]){
     printf("OS Version: %s\n", ubuffer.version);
     printf("CPU Type: %s\n", ubuffer.machine);
     printf("\n" KRESET);
+
+
+    //***********************************************
+    //           VARIABLES USED FOR HISTORY MODE
+    //***********************************************
+    // to transition between using past history and new commands
+    bool useHistory = false;                                                  
+    //char ch;
+    int t = 0;
+    int commandScroller = 0;
+    char historyOfCommands[10][20];
+    //char command[100];
+    //***********************************************
+    //          END VARIABLES USED FOR HISTORY MODE
+    //***********************************************
 
     char* input;
     char* output;
@@ -140,8 +155,14 @@ int main(int argc, char *argv[]){
         //Get key strokes directly and stop echo of every key stroke
         system ("/bin/stty raw -echo");
         //while return is not hit
+
+        int tempScroller = 0;
+
+        //********************************
+        //   START INPUT
+        //********************************
         while((ch = getchar())!='\r'){
-    	    if(ch == '\t'){
+            if(ch == '\t'){
                 //do tab complete
                 printf("%s", command);
             }
@@ -154,28 +175,28 @@ int main(int argc, char *argv[]){
                     command[strlen(command)-1] = '\0';
                 }
                 /*if(commandIndex>0){
-                    //remove last char from screen
-                    j = commandIndex;
-                    printf("\b");
-                    while(1){
-                        if(j==strlen(command)){
-                            printf(" ");
-                            break;
-                        }
-                        printf("%c", command[j]);
-                        j++;
-                    }
-                    while(j>=commandIndex){
-                        printf("\b");
-                        j--;
-                    }
-                    //remove last char from behind the scenes
-                    j = commandIndex;
-                    while(j<=strlen(command)){
-                        command[j-1] = command[j];
-                        j++;
-                    }
-                    commandIndex--;
+                //remove last char from screen
+                j = commandIndex;
+                printf("\b");
+                while(1){
+                if(j==strlen(command)){
+                printf(" ");
+                break;
+                }
+                printf("%c", command[j]);
+                j++;
+                }
+                while(j>=commandIndex){
+                printf("\b");
+                j--;
+                }
+                //remove last char from behind the scenes
+                j = commandIndex;
+                while(j<=strlen(command)){
+                command[j-1] = command[j];
+                j++;
+                }
+                commandIndex--;
                 }*/
             }
             //arrows
@@ -184,53 +205,75 @@ int main(int argc, char *argv[]){
                 getchar();
                 switch(getchar()){
                     //up
-                    case 'A':
-                        printf("up");
-                        break;
-                    //down
-                    case 'B':
-                        printf("down");
-                        break;
-                    //right
-                    case 'C':
-                        //printf("right");
-                        /*if(commandIndex<strlen(command)){
-                            commandIndex++;
-                            printf("\033[C");
-                        }*/
-                        break;
-                    //left
-                    case 'D':
-                        //printf("left");
-                        /*if(commandIndex>0){
-                            commandIndex--;
-                            printf("\033[D");
-                        }*/
-                        break;
+                case 'A':
+                    // printf("up");
+                    //********************************
+                    //   HISTORY MODE
+                    //********************************
+
+                    //This is key for returning to the correct place on line
+                    printf("\33[2K\r");
+
+                    //printf("--History_Mode-->%s", historyOfCommands[tempScroller]);
+                    printf("%s%s%s -->%s", KRED, cwd, KRESET, historyOfCommands[tempScroller]);
+
+                }//end switch
+
+                if(tempScroller == commandScroller)
+                {
+                    tempScroller = -1;
                 }
-            }
+
+                tempScroller ++;
+
+            }//end else if
+
+            //********************************
+            //  END HISTORY MODE
+            //********************************
+
             //put the char on the string and on the screen
             else{
                 putchar(ch);
                 /*j = commandIndex;
                 while(j<strlen(command)){
-                    printf("%c", command[j]);
-                    j++;
+                printf("%c", command[j]);
+                j++;
                 }
                 while(j>commandIndex){
-                    printf("\b");
-                    j--;
+                printf("\b");
+                j--;
                 }*/
                 append(command, ch);
                 //commandIndex++;
             }
         }
+
+
+
+        //********************************
+        //   ADD TO HISTORY
+        //********************************
+
+        //This will put the whole unparsed  string into history, needs reparsing to work as commands again
+        strcpy(historyOfCommands[commandScroller], command);
+        commandScroller = commandScroller + 1;
+        //If there are 10 saved entries in history array, then rewrite first entry
+        if(commandScroller == 10)
+        {
+            commandScroller = 0;
+        }
+
+        //********************************
+        //   END ADD TO HISTORY
+        //********************************
+
         //Return to normal capturing of keystrokes
         system("/bin/stty cooked echo");
         //to make sure we have the right string in the end
         printf("\n");
         if(strlen(command)==0) continue;
-        
+
         //parse(command);
         //index into array of arguments
         int argsIndex;
@@ -239,7 +282,7 @@ int main(int argc, char *argv[]){
         }
 
         // file redirection code (there are bugs so uncomment to test if you wish)
-        
+
         if(strstr(command, ">"))
         {
             outFound = true;
@@ -256,14 +299,14 @@ int main(int argc, char *argv[]){
         }
         //else
         //{
-            //parse normally
-            //argsLength = parser(command, args, " ");
+        //parse normally
+        //argsLength = parser(command, args, " ");
         //}
-        
+
 
         argsLength = parser(command, args, " ");
 
-        
+
         //Exit loop if command is exit
         //Should eventually be args[0]?
         if(strcmp(command,"exit")==0) exit(0);
@@ -288,7 +331,7 @@ int main(int argc, char *argv[]){
             }
             //Child proccess where command is executed.
             else if(rc==0){
-    
+
                 //more file redirection code (there are bugs so uncomment to test if you wish)
                 // dont forget to fflush(0);
                 fflush(0);
@@ -300,7 +343,7 @@ int main(int argc, char *argv[]){
                     close(fd1); // close the file
                     inFound = false;
                 }
-    
+
                 if(outFound) // if > is found
                 {
                     int fd2 = creat(output, 0644); // create the file
@@ -308,7 +351,7 @@ int main(int argc, char *argv[]){
                     close(fd2); // close file
                     outFound = false;
                 }
-    
+
                 //call exec() to run command
                 execvp(args[0],args);
                 //Sould not print if exec() is successful
