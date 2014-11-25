@@ -128,6 +128,10 @@ int main(int argc, char *argv[]){
     char *searchResult;
     char *currentPath = malloc(100);
     char nextPath[100];
+    char *pathArray[50];
+    char *pathTemp = malloc(100);
+    //char *pathTemp2;
+    int pathIndex;
     //for(i=0; i<100; i++) dirContents[i]=NULL;
     //index into command string
     //int commandIndex = 0;
@@ -136,11 +140,12 @@ int main(int argc, char *argv[]){
         //clear command string
         command[0] = '\0';
         currentPath = "/bin";
-        strcpy(nextPath, "/bin");
+        strcpy(nextPath, "/bin/");
         strcpy(searchTemp, "");
         searchFor = "";
         outFound = false;
         inFound = false;
+        pathIndex = 0;
         //commandIndex = 0;
         //get current directory
         if(getcwd(temp, sizeof(temp))){
@@ -182,9 +187,14 @@ int main(int argc, char *argv[]){
                 if(strlen(command)>0){
                     //remove last char from screen
                     printf("\b \b");
+                    //if(command[strlen(command)-1]=='/'||command[strlen(command)-1]==' '){
+                      //  strcpy(searchFor
                     //remove last char from behind the scenes
                     command[strlen(command)-1] = '\0';
                     nextPath[strlen(nextPath)-1] = '\0';
+                    strcpy(pathTemp, nextPath);
+                    pathIndex = parser(pathTemp, pathArray, "/");
+                    searchFor = pathArray[pathIndex-1];
                 }
                 /*if(commandIndex>0){
                     //remove last char from screen
@@ -254,8 +264,11 @@ int main(int argc, char *argv[]){
                 }
                 else{
                     append(nextPath, ch);
-                    append(searchTemp, ch);
-                    searchFor = searchTemp;
+                    //append(searchTemp, ch);
+                    //pathTemp = nextPath;
+                    strcpy(pathTemp, nextPath);
+                    pathIndex = parser(pathTemp, pathArray, "/");
+                    searchFor = pathArray[pathIndex-1];
                 }
                 if(ch=='/'){
                     currentPath = nextPath;
