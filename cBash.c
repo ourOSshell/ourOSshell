@@ -102,7 +102,7 @@ int main(int argc, char *argv[]){
     //           VARIABLES USED FOR HISTORY MODE
     //***********************************************
     // to transition between using past history and new commands
-    bool useHistory = false;                                                  
+    bool addToHistory = false;                                                  
     //char ch;
     int t = 0;
     int commandScroller = 0;
@@ -228,8 +228,9 @@ int main(int argc, char *argv[]){
                 tempScroller ++;
 
                 //The one you selected will be -1 cause temp scroller adds one on exit
-                char *this = historyOfCommands[tempScroller -1];
-                strcpy(command, this);
+                char *thisHist = historyOfCommands[tempScroller -1];
+                strcpy(command, thisHist);
+                addToHistory = false;
 
             }//end else if
 
@@ -251,6 +252,9 @@ int main(int argc, char *argv[]){
                 }*/
                 append(command, ch);
                 //commandIndex++;
+
+                //only add to history if it's a new command
+                addToHistory = true;
             }
         }
 
@@ -260,13 +264,18 @@ int main(int argc, char *argv[]){
         //   ADD TO HISTORY
         //********************************
 
-        //This will put the whole unparsed  string into history, needs reparsing to work as commands again
-        strcpy(historyOfCommands[commandScroller], command);
-        commandScroller = commandScroller + 1;
-        //If there are 10 saved entries in history array, then rewrite first entry
-        if(commandScroller == 10)
+        //only add to history if it is a new command
+        if(addToHistory == true)
         {
-            commandScroller = 0;
+            //This will put the whole unparsed  string into history, needs reparsing to work as commands again
+            strcpy(historyOfCommands[commandScroller], command);
+            commandScroller = commandScroller + 1;
+            //If there are 10 saved entries in history array, then rewrite first entry
+            if(commandScroller == 10)
+            {
+                commandScroller = 0;
+            }
+
         }
 
         //********************************
