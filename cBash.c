@@ -185,7 +185,7 @@ int main(int argc, char *argv[]){
         //   START INPUT
         //********************************
         while((ch = getchar())!='\r'){
-    	    if(ch == '\t'){
+            if(ch == '\t'){
                 system("/bin/stty cooked echo");
                 //printf("   %s  %s  %s\n", currentPath, nextPath, searchFor);
                 //do tab complete
@@ -241,7 +241,7 @@ int main(int argc, char *argv[]){
                     //remove last char from screen
                     printf("\b \b");
                     //if(command[strlen(command)-1]=='/'||command[strlen(command)-1]==' '){
-                      //  strcpy(searchFor
+                    //  strcpy(searchFor
                     //remove last char from behind the scenes
                     command[strlen(command)-1] = '\0';
                     nextPath[strlen(nextPath)-1] = '\0';
@@ -291,7 +291,7 @@ int main(int argc, char *argv[]){
                     printf("\33[2K\r");
 
                     //printf("--History_Mode-->%s", historyOfCommands[tempScroller]);
-                    printf("%s%s%s --> %s", KRED, cwd, KRESET, historyOfCommands[tempScroller]);
+                    printf("%s%s%s --> %s", KRED, prompt, KRESET, historyOfCommands[tempScroller]);
 
                 }//end switch
 
