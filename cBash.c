@@ -122,7 +122,10 @@ int main(int argc, char *argv[]){
     char *homedir = getenv("HOME");
     DIR *d;
     struct dirent *dir;
-    char *dirContents[100];
+    char *dirContents[1000];
+    char *searchFor = malloc(20);
+    char searchTemp[20];
+    char *searchResult;
     char *currentPath = malloc(100);
     char nextPath[100];
     //for(i=0; i<100; i++) dirContents[i]=NULL;
@@ -132,8 +135,10 @@ int main(int argc, char *argv[]){
     while(1){
         //clear command string
         command[0] = '\0';
-        currentPath = "/";
-        strcpy(nextPath, "/");
+        currentPath = "/bin";
+        strcpy(nextPath, "/bin");
+        strcpy(searchTemp, "");
+        searchFor = "";
         outFound = false;
         inFound = false;
         //commandIndex = 0;
@@ -152,14 +157,17 @@ int main(int argc, char *argv[]){
         while((ch = getchar())!='\r'){
     	    if(ch == '\t'){
                 system("/bin/stty cooked echo");
-                printf("   %s  %s\n", currentPath, nextPath);
+                printf("   %s  %s  %s\n", currentPath, nextPath, searchFor);
                 //do tab complete
                 d = opendir(currentPath);
                 if(d){
                     j = 0;
                     while((dir = readdir(d))!=NULL){
                         dirContents[j] = dir->d_name;
-                        printf("%s\n", dirContents[j]);
+                        searchResult = strstr(dirContents[j], searchFor);
+                        if((searchResult-dirContents[j])==0){
+                            printf("%s\n", dirContents[j]);
+                        }
                         //if(j%3==0) printf("\n");
                         j++;
                     }
@@ -241,10 +249,18 @@ int main(int argc, char *argv[]){
                     currentPath = cwd;
                     append(currentPath, '/');
                     strcpy(nextPath, currentPath);
+                    searchTemp[0] = '\0';
+                    searchFor = "";
                 }
-                else append(nextPath, ch);
+                else{
+                    append(nextPath, ch);
+                    append(searchTemp, ch);
+                    searchFor = searchTemp;
+                }
                 if(ch=='/'){
                     currentPath = nextPath;
+                    searchTemp[0] = '\0';
+                    searchFor = "";
                 }
                 /*j = commandIndex;
                 while(j<strlen(command)){
