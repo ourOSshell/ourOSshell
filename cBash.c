@@ -129,6 +129,7 @@ int main(int argc, char *argv[]){
     char searchTemp[20];
     char *searchResult;
     char *currentPath = malloc(100);
+    char currentTemp[100];
     char nextPath[100];
     char *pathArray[50];
     char *pathTemp = malloc(100);
@@ -204,10 +205,11 @@ int main(int argc, char *argv[]){
                         strcpy(pathTemp, nextPath);
                         pathIndex = parser(pathTemp, pathArray, "/");
                         searchFor = pathArray[pathIndex-1];
-                //printf("   %s  %s  %s\n", currentPath, nextPath, searchFor);
                     }
                     matchedLen=0;
                 }
+                //else{printf("can't open dir");}
+                //printf("   %s  %s  %s\n", currentPath, nextPath, searchFor);
                 system ("/bin/stty raw -echo");
                 //printf("%s", command);
             }
@@ -300,7 +302,8 @@ int main(int argc, char *argv[]){
                     searchFor = pathArray[pathIndex-1];
                 }
                 if(ch=='/'){
-                    currentPath = nextPath;
+                    strcpy(currentTemp, nextPath);
+                    currentPath = currentTemp;
                     searchTemp[0] = '\0';
                     searchFor = "";
                 }
